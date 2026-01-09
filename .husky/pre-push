@@ -1,7 +1,11 @@
 #!/usr/bin/env sh
 
 # 브랜치명 검증
-branch_name=$(git symbolic-ref --short HEAD)
+branch_name=$(git symbolic-ref --short HEAD 2>/dev/null || true)
+if [ -z "$branch_name" ]; then
+  echo "브랜치명을 확인할 수 없어(pre-push: detached HEAD 등) 브랜치명 검증을 건너뜁니다."
+  exit 0
+fi
 
 # main, master 브랜치는 예외 처리 (메인 브랜치)
 if [ "$branch_name" = "main" ] || [ "$branch_name" = "master" ]; then
