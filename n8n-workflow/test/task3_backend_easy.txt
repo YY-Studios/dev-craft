@@ -1,0 +1,36 @@
+/**
+ * 작업 3 (난이도 하) - 백엔드
+ * 단순 REST 엔드포인트 예시(Express)
+ *
+ * 포인트:
+ * - 요청/응답 JSON
+ * - 기본 입력 검증
+ */
+
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+app.get("/health", (_req, res) => {
+  res.json({ ok: true, ts: new Date().toISOString() });
+});
+
+app.post("/echo", (req, res) => {
+  const message = typeof req.body?.message === "string" ? req.body.message.trim() : "";
+  if (!message) return res.status(400).json({ message: "message is required" });
+
+  res.json({ message, length: message.length });
+});
+
+const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+app.listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`listening on :${port}`);
+});
+
+/*
+설명
+- 가장 기본적인 API 구현: 상태 저장 없이 요청을 받아 검증하고 응답만 반환.
+- 난이도는 낮지만, 실제 서비스에서는 로깅/에러 핸들러/스키마 검증을 공통화하는 게 중요.
+*/
