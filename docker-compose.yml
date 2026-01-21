@@ -7,11 +7,10 @@ services:
     ports:
       - '5678:5678'
     environment:
-      - N8N_HOST=localhost
+      - N8N_HOST=n8n.devcraft.date
       - N8N_PORT=5678
-      - N8N_PROTOCOL=http
+      - N8N_PROTOCOL=https
       - NODE_ENV=production
-      - WEBHOOK_URL=https://shared-spec-rotation-bobby.trycloudflare.com/ # 나중에 터널 주소로 변경 가능
+      - WEBHOOK_URL=https://n8n.devcraft.date # 고정 도메인으로 변경
     volumes:
       - ./n8n_data:/home/node/.n8n
-# 테스트용 주석
