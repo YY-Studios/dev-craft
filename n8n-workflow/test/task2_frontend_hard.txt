@@ -1,0 +1,142 @@
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+
+type FeedItem = {
+  id: string;
+  title: string;
+  createdAt: string;
+};
+
+// 실제 프로젝트에선 API 경로/스키마/에러처리 정책에 맞게 교체
+async function fetchPage(cursor: string | null, signal: AbortSignal): Promise<{
+  items: FeedItem[];
+  nextCursor: string | null;
+}> {
+  const qs = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
+  const res = await fetch(`/api/feed${qs}`, { signal });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+const Row = memo(function Row({ item }: { item: FeedItem }) {
+  return (
+    <li style={{ padding: 10, borderBottom: "1px solid #eee" }}>
+      <div style={{ fontWeight: 600 }}>{item.title}</div>
+      <div style={{ fontSize: 12, opacity: 0.7 }}>{item.createdAt}</div>
+    </li>
+  );
+});
+
+export default function Task2_Frontend_Hard() {
+  const [items, setItems] = useState<FeedItem[]>([]);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [hasNext, setHasNext] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const abortRef = useRef<AbortController | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const loadNext = useCallback(async () => {
+    if (loading || !hasNext) return;
+
+    // 이전 요청 취소(연타/중복 트리거 대응)
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
+
+    setLoading(true);
+    setErr(null);
+
+    try {
+      const data = await fetchPage(cursor, ac.signal);
+
+      // 중복 id 방지(서버/클라이언트 레이스 방어)
+      setItems((prev) => {
+        const seen = new Set(prev.map((p) => p.id));
+        const next = data.items.filter((x) => !seen.has(x.id));
+        return [...prev, ...next];
+      });
+
+      setCursor(data.nextCursor);
+      setHasNext(Boolean(data.nextCursor));
+    } catch (e) {
+      if ((e as any)?.name === "AbortError") return;
+      setErr(e instanceof Error ? e.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }, [cursor, hasNext, loading]);
+
+  // 최초 1회 로드
+  useEffect(() => {
+    void loadNext();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Sentinel 관찰해서 다음 페이지 로드
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const first = entries[0];
+        if (first?.isIntersecting) void loadNext();
+      },
+      { root: null, rootMargin: "200px", threshold: 0 }
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, [loadNext]);
+
+  // 렌더링용 파생값 (예: 정렬/필터가 붙는다면 여기서 관리)
+  const renderItems = useMemo(() => items, [items]);
+
+  return (
+    <section style={{ padding: 16, maxWidth: 720 }}>
+      <h2>Task 2: Infinite Feed</h2>
+
+      {err && (
+        <div style={{ padding: 10, background: "#fff5f5", border: "1px solid #ffd5d5" }}>
+          에러: {err}{" "}
+          <button type="button" onClick={() => void loadNext()}>
+            재시도
+          </button>
+        </div>
+      )}
+
+      <ul style={{ listStyle: "none", padding: 0, marginTop: 12 }}>
+        {renderItems.map((item) => (
+          <Row key={item.id} item={item} />
+        ))}
+      </ul>
+
+      <div ref={sentinelRef} style={{ height: 1 }} />
+
+      <div style={{ padding: 12, opacity: 0.8 }}>
+        {loading ? "로딩 중..." : hasNext ? "스크롤하면 더 불러옵니다" : "끝"}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * 작업 2 (난이도 상) - 프론트엔드
+ * "무한 스크롤 + 부분 렌더링 최적화" 예시(라이브러리 없이 뼈대만)
+ *
+ * 포인트:
+ * - IntersectionObserver로 next page 트리거
+ * - fetch 취소(AbortController)
+ * - 아이템 렌더링 최소화(memo, useCallback)
+ * - 상태 분리(데이터/로딩/에러)
+ */
+
+
+/*
+설명
+- 무한 스크롤은 “트리거(관찰) + 데이터 로드 + 중복/경합 방어”가 핵심.
+- Row를 memo로 감싸고, 핸들러는 useCallback으로 고정해 불필요한 리렌더를 줄임.
+- 실제 프로젝트에선 페이지 캐시, 재검증, 가상화(virtualization)까지 붙으면 난이도가 확 올라감.
+*/
