@@ -1,0 +1,157 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "value": "YY-Studios",
+          "mode": "list",
+          "cachedResultName": "YY-Studios",
+          "cachedResultUrl": "https://github.com/YY-Studios"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "dev-craft",
+          "mode": "list",
+          "cachedResultName": "dev-craft",
+          "cachedResultUrl": "https://github.com/YY-Studios/dev-craft"
+        },
+        "events": ["pull_request"],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.githubTrigger",
+      "typeVersion": 1,
+      "position": [0, 0],
+      "id": "7e5e1f31-8378-4718-9032-5070136a3a4d",
+      "name": "Github Trigger",
+      "webhookId": "adff7c6e-2343-4b9a-aaec-fa821a6f7b76",
+      "credentials": {
+        "githubApi": {
+          "id": "tWvD78NQVVvbu9SJ",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/YY-Studios/dev-craft/pulls/{{ $json.body.number }}/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [208, 0],
+      "id": "fbdb92a3-5bfc-4187-94d1-375f5ac74c21",
+      "name": "HTTP Request",
+      "credentials": {
+        "githubApi": {
+          "id": "tWvD78NQVVvbu9SJ",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. 모든 파일의 변경 사항(diff)을 하나의 문자열로 합칩니다.\nconst filesWithPatch = items.filter(item => item.json.patch);// 패치가 있는 파일만 필터링\nconst combinedDiff = filesWithPatch \n  .map(item => {\n    return `### File: ${item.json.filename}\\nStatus: ${item.json.status}\\nDiff:\\n${item.json.patch.slice(0, 1500)}`;\n  })\n  .join('\\n\\n---\\n\\n'); // 파일 간 구분을 위해 구분자 추가\n\n// 2. 단일 아이템(Single Item)으로 리턴하여 AI 노드가 한 번만 실행되게 합니다.\nreturn [{\n  json: {\n    allFilesDiff: combinedDiff,\n    totalFiles: filesWithPatch.length,\n    // 나중에 GitHub 댓글 달 때 참조할 PR 번호 (트리거 노드에서 가져오기)\n    prNumber: $('Github Trigger').first().json.body.number\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [416, 0],
+      "id": "c0a901f3-e85c-46f2-a5fa-d613d70c416b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Role: Senior Frontend Developer Reviewer\n\n[Context]\n당신은 현재 제출된 Pull Request 전체를 리뷰하는 시니어 개발자입니다. \n아래 전달된 데이터는 이번 PR에서 변경된 모든 파일의 합본입니다.\n\n[Code Diff List]\n{{ $json.allFilesDiff }}\n\n[Task]\n제공된 모든 파일의 변경 사항을 종합적으로 분석하여, 아래 JSON 포맷으로 답변해 주세요.\n(반드시 마크다운 기호 없이 순수 JSON 객체만 출력하세요.)\n\n프론트엔드 관점(React 렌더링 최적화, 컴포넌트 설계, 성능, 컨벤션)에서 엄격하게 리뷰해 주세요.\n\n존재하지 않는 파일이나 코드에 대해서는 절대 추측하지 말고,\n제공된 Diff 기준으로만 판단하세요.\n\n본 프로젝트는 React + TypeScript 기반입니다.\n{\n  \"summary\": \"이번 PR의 전체 변경 목적 요약 (모든 파일을 아우르는 설명)\",\n  \"score\": 0~100 사이의 전체 코드 품질 점수 (숫자만),\n  \"risk\": \"Low\" | \"Medium\" | \"High\",\n  \"issues\": [\n    \"[파일명] 발견된 문제점 또는 개선 제안 (구체적으로 파일명을 명시하며 작성)\",\n    \"[파일명] 성능 최적화가 필요한 부분이나 컨벤션 위반 사항\"\n  ]\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [624, 0],
+      "id": "8f6ce310-59e0-4aa5-bc47-a12c49302415",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "3cUqidcvdvTh8C30",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Github Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "a60d83f7-e7cf-4c59-a6e6-c8a3ee6bb2a9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6f52c90a4febca0792880ce402579055dc9a7810897f9ff215b91419fe9d2d97"
+  },
+  "id": "xtZqvwcxciiCXpseGEBE5",
+  "tags": []
+}
