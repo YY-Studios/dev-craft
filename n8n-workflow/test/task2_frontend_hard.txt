@@ -122,21 +122,4 @@ export default function Task2_Frontend_Hard() {
   );
 }
 
-/**
- * 작업 2 (난이도 상) - 프론트엔드
- * "무한 스크롤 + 부분 렌더링 최적화" 예시(라이브러리 없이 뼈대만)
- *
- * 포인트:
- * - IntersectionObserver로 next page 트리거
- * - fetch 취소(AbortController)
- * - 아이템 렌더링 최소화(memo, useCallback)
- * - 상태 분리(데이터/로딩/에러)
- */
 
-
-/*
-설명
-- 무한 스크롤은 “트리거(관찰) + 데이터 로드 + 중복/경합 방어”가 핵심.
-- Row를 memo로 감싸고, 핸들러는 useCallback으로 고정해 불필요한 리렌더를 줄임.
-- 실제 프로젝트에선 페이지 캐시, 재검증, 가상화(virtualization)까지 붙으면 난이도가 확 올라감.
-*/
