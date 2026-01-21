@@ -1,0 +1,99 @@
+/**
+ * 작업 4 (난이도 상) - 백엔드
+ * 인증 + 권한 + 멱등성 + 레이트리밋 + 트랜잭션(개념 뼈대) 예시
+ *
+ * 실제로 바로 실행되는 완성품이 아니라, "구성 요소"를 어떻게 쪼개고 연결하는지 보여주는 템플릿.
+ * (프레임워크/DB/큐는 프로젝트에 맞게 교체)
+ */
+
+type User = { id: string; role: "user" | "admin" };
+type RequestLike = {
+  headers: Record<string, string | undefined>;
+  body: unknown;
+};
+type ResponseLike = {
+  status: (code: number) => ResponseLike;
+  json: (data: unknown) => void;
+};
+
+// 1) 인증: 토큰 파싱(예: JWT) → user 추출
+function authenticate(req: RequestLike): User | null {
+  const token = req.headers["authorization"]?.replace("Bearer ", "");
+  if (!token) return null;
+
+  // TODO: verify token (signature/exp/issuer/audience)
+  // 여기선 예시로만 처리
+  return { id: "u_123", role: "user" };
+}
+
+// 2) 권한
+function authorize(user: User, required: User["role"]) {
+  const ok = required === "user" ? true : user.role === "admin";
+  if (!ok) throw new Error("FORBIDDEN");
+}
+
+// 3) 레이트리밋(예: userId 기준, Redis 같은 저장소 필요)
+async function rateLimit(userId: string): Promise<void> {
+  // TODO: increment counter in redis, throw if exceeded
+  return;
+}
+
+// 4) 멱등성 키(중복 요청 방지)
+async function checkIdempotency(idempotencyKey: string | null, userId: string) {
+  if (!idempotencyKey) return { alreadyProcessed: false as const };
+
+  // TODO:
+  // - 이미 처리된 키면 이전 응답을 그대로 반환
+  // - 아직 처리 중이면 409/202 등 정책 결정
+  return { alreadyProcessed: false as const };
+}
+
+// 5) 트랜잭션(예: DB에서 원자적으로 처리)
+async function inTransaction<T>(fn: () => Promise<T>): Promise<T> {
+  // TODO: db.transaction(fn)
+  return fn();
+}
+
+// 6) 실제 핸들러(예: 결제/예약 생성 같은 중요한 작업)
+export async function createOrder(req: RequestLike, res: ResponseLike) {
+  const user = authenticate(req);
+  if (!user) return res.status(401).json({ message: "UNAUTHORIZED" });
+
+  try {
+    await rateLimit(user.id);
+    authorize(user, "user");
+
+    const idemKey = req.headers["idempotency-key"] ?? null;
+    const idem = await checkIdempotency(idemKey, user.id);
+    if (idem.alreadyProcessed) {
+      return res.status(200).json({ message: "OK (replayed)" });
+    }
+
+    // 입력 검증(스키마 검증 도구로 대체 권장)
+    const body = req.body as any;
+    if (!body || typeof body.productId !== "string" || typeof body.quantity !== "number") {
+      return res.status(400).json({ message: "BAD_REQUEST" });
+    }
+
+    const result = await inTransaction(async () => {
+      // TODO:
+      // - 재고 확인/차감
+      // - 주문 생성
+      // - 결제 요청 큐에 적재
+      return { orderId: "o_123", status: "created" as const };
+    });
+
+    // TODO: idemKey가 있으면 응답을 저장(재시도 대비)
+    return res.status(201).json(result);
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "UNKNOWN";
+    if (msg === "FORBIDDEN") return res.status(403).json({ message: "FORBIDDEN" });
+    return res.status(500).json({ message: "INTERNAL_ERROR" });
+  }
+}
+
+/*
+설명
+- 상급 백엔드는 “기능”보다 “안전하게 실패/재시도/중복”을 다루는 설계가 중요.
+- 인증/권한/레이트리밋/멱등성/트랜잭션을 분리해 조합 가능하게 두면 유지보수가 쉬움.
+*/
