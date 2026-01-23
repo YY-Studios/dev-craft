@@ -1,12 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-
+import { clientApi } from '@/shared/api/client/clientApi';
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
 
+  const hadleDateFetch = async () => {
+    const res = await clientApi('dev');
+    console.log(res);
+  };
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
+      {/* 테스트 버튼 */}
+      <button onClick={() => hadleDateFetch()}>test버튼</button>
       {/* 토글 */}
       <div className="flex gap-2">
         <button
