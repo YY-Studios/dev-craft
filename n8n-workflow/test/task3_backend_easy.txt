@@ -1,0 +1,25 @@
+
+
+import express from "express";
+
+const app = express();
+app.use(express.json());
+
+app.get("/health", (_req, res) => {
+  res.json({ ok: true, ts: new Date().toISOString() });
+});
+
+app.post("/echo", (req, res) => {
+  const message = typeof req.body?.message === "string" ? req.body.message.trim() : "";
+  if (!message) return res.status(400).json({ message: "message is required" });
+
+  res.json({ message, length: message.length });
+});
+
+const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+app.listen(port, () => {
+  // eslint-disable-next-line no-console
+  console.log(`listening on :${port}`);
+});
+
+
