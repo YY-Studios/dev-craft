@@ -16,6 +16,7 @@ module.exports = {
         'ci', // CI 설정 파일 수정
         'build', // 빌드 시스템 또는 외부 의존성 변경
         'revert', // 이전 커밋 되돌리기
+        'core', // 핵심 기능 관련 변경사항
       ],
     ],
     'type-case': [2, 'always', 'lower-case'],
