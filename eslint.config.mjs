@@ -6,6 +6,7 @@ import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
+import globals from 'globals';
 
 export default [
   {
@@ -37,6 +38,10 @@ export default [
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
         project: './tsconfig.json',
+      },
+      globals: {
+        ...globals.browser, // fetch 등을 인식
+        ...globals.node, // process 등을 인식
       },
     },
     settings: {
