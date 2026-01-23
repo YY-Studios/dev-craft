@@ -1,0 +1,74 @@
+import React, { useMemo, useState } from "react";
+
+/**
+ * 작업 1 (난이도 하) - 프론트엔드
+ * 간단한 "입력 → 목록 추가 → 필터 표시" UI 예시
+ *
+ * 포인트:
+ * - Controlled input
+ * - 최소한의 상태 관리(useState)
+ * - 파생값(useMemo)로 렌더링 비용 줄이기
+ */
+
+type Item = {
+  id: string;
+  text: string;
+};
+
+export default function Task1_Frontend_Easy() {
+  const [text, setText] = useState("");
+  const [items, setItems] = useState<Item[]>([]);
+  const [showOnlyLong, setShowOnlyLong] = useState(false);
+
+  const visibleItems = useMemo(() => {
+    if (!showOnlyLong) return items;
+    return items.filter((it) => it.text.trim().length >= 5);
+  }, [items, showOnlyLong]);
+
+  const onAdd = () => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    setItems((prev) => [{ id: crypto.randomUUID(), text: trimmed }, ...prev]);
+    setText("");
+  };
+
+  return (
+    <section style={{ padding: 16, maxWidth: 520 }}>
+      <h2>Task 1: Quick Notes</h2>
+
+      <div style={{ display: "flex", gap: 8 }}>
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="메모 입력"
+          style={{ flex: 1, padding: 8 }}
+        />
+        <button type="button" onClick={onAdd} style={{ padding: "8px 12px" }}>
+          추가
+        </button>
+      </div>
+
+      <label style={{ display: "block", marginTop: 12 }}>
+        <input
+          type="checkbox"
+          checked={showOnlyLong}
+          onChange={(e) => setShowOnlyLong(e.target.checked)}
+        />{" "}
+        5자 이상만 보기
+      </label>
+
+      <ul style={{ marginTop: 12 }}>
+        {visibleItems.map((it) => (
+          <li key={it.id}>{it.text}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/*
+설명
+- 입력값을 state로 관리하고, 버튼 클릭 시 목록에 추가하는 아주 기본적인 UI 작업.
+- 필터링 같은 파생값은 useMemo로 계산해서 불필요한 재계산을 줄임.
+*/
