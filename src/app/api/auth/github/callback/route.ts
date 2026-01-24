@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   console.log('githubUser:', githubUser);
 
   // 여기서 githubUser를다시하자
-  const user = await serverApi<User>('/user?on_conflict=github_user_id', {
+  const users = await serverApi<User[]>('/user?on_conflict=github_user_id', {
     method: 'POST',
     headers: {
       Prefer: 'resolution=merge-duplicates,return=representation', // insert 후 생성된 row 반환
@@ -48,6 +48,7 @@ export async function GET(req: NextRequest) {
     },
   });
 
+  const user = users[0];
   const accessToken = createAccessToken({ user_id: user.id });
 
   const response = NextResponse.redirect(new URL('/', req.url));
