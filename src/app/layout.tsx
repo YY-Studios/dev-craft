@@ -1,8 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
+import { Header } from '@/shared/ui/Header';
 import './globals.css';
-
+import { QueryProvider } from '@/shared/providers/QueryProvider';
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -26,17 +27,11 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {/* todo: header 교체 */}
-        <header className="border-b px-6 py-4">
-          <div className="mx-auto flex max-w-5xl items-center justify-between">
-            <div>
-              <h1 className="text-lg font-semibold">개발자 공방</h1>
-              <p className="text-sm text-gray-500">코드와 문서를 함께 만드는 공간</p>
-            </div>
-            <button className="rounded-md border px-4 py-2 text-sm">GitHub 로그인</button>
-          </div>
-        </header>
-        <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+        <QueryProvider>
+          {/* todo: header 교체 */}
+          <Header />
+          <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+        </QueryProvider>
       </body>
     </html>
   );

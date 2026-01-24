@@ -19,6 +19,7 @@
     "n8n": "n8n start --tunnel"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.20",
     "better-sqlite3": "^12.5.0",
     "jsonwebtoken": "^9.0.3",
     "n8n": "^2.2.5",
