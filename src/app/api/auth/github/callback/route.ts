@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-// import { getGithubUserByToken } from '@/shared/api/server/github';
+import { getGithubUserByToken } from '@/shared/api/server/github';
+import { serverApi } from '@/shared/api/server/serverApi';
+import { User } from '@/shared/types/user';
+import { createAccessToken } from '@/shared/auth/createAccessToken';
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get('code');
@@ -21,24 +24,42 @@ export async function GET(req: NextRequest) {
       code,
     }),
   });
-  const tokenData = await tokenRes.json();
-  const accessToken = tokenData.access_token;
+  const { access_token: github_access_token } = await tokenRes.json();
 
-  if (!accessToken) {
+  if (!github_access_token) {
     return NextResponse.json({ messege: '토큰 에러' }, { status: 400 });
   }
+
+  // access token으로 GitHub 사용자 정보 가져오기
+  const githubUser = await getGithubUserByToken(github_access_token);
+  console.log('githubUser:', githubUser);
+
+  // 여기서 githubUser를다시하자
+  const user = await serverApi<User>('/user?on_conflict=github_user_id', {
+    method: 'POST',
+    headers: {
+      Prefer: 'resolution=merge-duplicates,return=representation', // insert 후 생성된 row 반환
+    },
+    body: {
+      github_user_id: githubUser.id,
+      username: githubUser.login,
+      avatar_url: githubUser.avatar_url,
+      email: githubUser.email ?? null,
+    },
+  });
+
+  const accessToken = createAccessToken({ user_id: user.id });
+
   const response = NextResponse.redirect(new URL('/', req.url));
 
   response.cookies.set({
-    name: 'github_access_token',
+    name: 'access_token',
     value: accessToken,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
   });
-
-  //   const githubUser = await getGithubUserByToken(accessToken);
 
   return response;
 }
