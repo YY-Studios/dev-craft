@@ -7,13 +7,16 @@ export async function clientApi<T>(path: string): Promise<T> {
   });
 
   if (!res.ok) {
+    const raw = await res.text();
     let message = 'Request failed';
 
-    try {
-      const data = await res.json();
-      message = data.message ?? message;
-    } catch {
-      message = await res.text();
+    if (raw) {
+      try {
+        const data = JSON.parse(raw) as { message?: string };
+        message = data.message ?? message;
+      } catch {
+        message = raw;
+      }
     }
 
     throw new ApiError(res.status, message);
