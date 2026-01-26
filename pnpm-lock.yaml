@@ -14,6 +14,9 @@ importers:
       better-sqlite3:
         specifier: ^12.5.0
         version: 12.5.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
@@ -29,6 +32,12 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
+      tailwind-merge:
+        specifier: ^3.4.0
+        version: 3.4.0
+      tailwind-variants:
+        specifier: ^3.2.2
+        version: 3.2.2(tailwind-merge@3.4.0)(tailwindcss@4.1.18)
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -3646,6 +3655,10 @@ packages:
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
+
+  clsx@2.1.1:
+    resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
+    engines: {node: '>=6'}
 
   cluster-key-slot@1.1.2:
     resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
@@ -7269,6 +7282,19 @@ packages:
   syslog-client@1.1.1:
     resolution: {integrity: sha512-c3qKw8JzCuHt0mwrzKQr8eqOc3RB28HgOpFuwGMO3GLscVpfR+0ECevWLZq/yIJTbx3WTb3QXBFVpTFtKAPDrw==}
 
+  tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
+
+  tailwind-variants@3.2.2:
+    resolution: {integrity: sha512-Mi4kHeMTLvKlM98XPnK+7HoBPmf4gygdFmqQPaDivc3DpYS6aIY6KiG/PgThrGvii5YZJqRsPz0aPyhoFzmZgg==}
+    engines: {node: '>=16.x', pnpm: '>=7.x'}
+    peerDependencies:
+      tailwind-merge: '>=3.0.0'
+      tailwindcss: '*'
+    peerDependenciesMeta:
+      tailwind-merge:
+        optional: true
+
   tailwindcss@4.1.18:
     resolution: {integrity: sha512-4+Z+0yiYyEtUVCScyfHCxOYP06L5Ne+JiHhY2IjR2KWMIWhJOYZKLSGZaP5HkZ8+bY0cxfzwDE5uOmzFXyIwxw==}
 
@@ -10773,7 +10799,7 @@ snapshots:
     dependencies:
       zod: 3.25.67
 
-  '@n8n/task-runner@2.2.3(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.15.0(ws@8.17.1)(zod@3.25.67))':
+  '@n8n/task-runner@2.2.3(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.15.0(ws@8.17.1)(zod@4.3.6))':
     dependencies:
       '@n8n/config': 2.1.0
       '@n8n/di': 0.10.0
@@ -12982,6 +13008,8 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
+
+  clsx@2.1.1: {}
 
   cluster-key-slot@1.1.2: {}
 
@@ -15821,7 +15849,7 @@ snapshots:
       '@n8n/localtunnel': 3.0.0
       '@n8n/n8n-nodes-langchain': 2.2.3(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.965.0)(@aws-sdk/credential-provider-node@3.965.0)(@aws-sdk/credential-providers@3.965.0)(@azure/storage-blob@12.26.0)(@browserbasehq/sdk@2.6.0(encoding@0.1.13))(@browserbasehq/stagehand@1.14.0(@playwright/test@1.57.0)(deepmerge@4.3.1)(dotenv@17.2.3)(encoding@0.1.13)(openai@6.15.0(ws@8.17.1)(zod@4.3.6))(zod@4.3.6))(@cfworker/json-schema@4.1.1)(@google-cloud/storage@7.18.0(encoding@0.1.13))(@ibm-cloud/watsonx-ai@1.7.6)(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(@sentry/node@9.47.1)(@smithy/util-utf8@2.3.0)(asn1.js@5.4.1)(better-sqlite3@12.5.0)(crypto-js@4.2.0)(date-fns@2.30.0)(encoding@0.1.13)(fast-xml-parser@5.3.3)(google-auth-library@10.5.0)(ibm-cloud-sdk-core@5.4.5)(ioredis@5.3.2)(jsonwebtoken@9.0.3)(mysql2@3.15.0)(playwright@1.57.0)(promise-ftp-common@1.1.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(socks@2.8.7)(ts-toolbelt@9.6.0)(typescript@5.9.3)(ws@8.17.1)
       '@n8n/permissions': 0.45.0
-      '@n8n/task-runner': 2.2.3(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.15.0(ws@8.17.1)(zod@3.25.67))
+      '@n8n/task-runner': 2.2.3(@opentelemetry/api@1.9.0)(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(openai@6.15.0(ws@8.17.1)(zod@4.3.6))
       '@n8n/typeorm': 0.3.20-15(@sentry/node@9.47.1)(mysql2@3.15.0)(pg@8.12.0)(sqlite3@5.1.7)
       '@n8n/utils': 1.21.0
       '@n8n_io/ai-assistant-sdk': 1.19.1
@@ -17533,6 +17561,14 @@ snapshots:
       '@pkgr/core': 0.2.9
 
   syslog-client@1.1.1: {}
+
+  tailwind-merge@3.4.0: {}
+
+  tailwind-variants@3.2.2(tailwind-merge@3.4.0)(tailwindcss@4.1.18):
+    dependencies:
+      tailwindcss: 4.1.18
+    optionalDependencies:
+      tailwind-merge: 3.4.0
 
   tailwindcss@4.1.18: {}
 

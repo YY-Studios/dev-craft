@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { clientApi } from '@/shared/api/client/clientApi';
+import Input from '@/shared/ui/input/Input';
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
 
@@ -13,6 +14,8 @@ export default function DevPage() {
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
       {/* 테스트 버튼 */}
       <button onClick={() => hadleDateFetch()}>test버튼</button>
+
+      <Input placeholder="이름을 입력하세요" />
       {/* 토글 */}
       <div className="flex gap-2">
         <button
