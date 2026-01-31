@@ -113,17 +113,6 @@ export default function DevPage() {
         </button>
       </section>
       {/* PR 변경 영향도 */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">PR 변경 영향도</h2>
-
-        <div className="rounded-md border p-6 text-sm text-gray-500">변경 영향도 시각화 영역</div>
-      </section>
-      {/* 생성된 문서 */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">생성된 문서</h2>
-
-        <div className="rounded-md border p-6 text-sm text-gray-500">생성된 문서</div>
-      </section>
       <Accordion>
         <Accordion.Item value="item-1">
           <Accordion.Trigger>PR 변경 영향도</Accordion.Trigger>
@@ -133,6 +122,7 @@ export default function DevPage() {
         </Accordion.Item>
       </Accordion>
 
+      {/* 생성된 문서 */}
       <Accordion accordion={false}>
         <Accordion.Item value="item-2">
           <Accordion.Trigger>생성된 문서</Accordion.Trigger>

@@ -24,13 +24,19 @@ const AccordionTrigger = ({ children }: AccordionTriggerProps) => {
       className={cn(
         'flex items-center justify-between w-full p-6 border-gray-200',
         isOpen && 'border-b',
+        accordion ? 'cursor-pointer' : 'cursor-default',
       )}
       aria-expanded={isOpen}
     >
       <span>{children}</span>
       {accordion && (
-        <span className={cn('transition-transform duration-200', isOpen && 'rotate-180')}>
-          {isOpen ? <IconSquareMinus /> : <IconSquarePlus />}
+        <span>
+          <img
+            src={(isOpen ? IconSquareMinus : IconSquarePlus).src}
+            className="w-6 h-6"
+            alt=""
+            aria-hidden
+          />
         </span>
       )}
     </button>
