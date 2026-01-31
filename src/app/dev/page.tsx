@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Input from '@/shared/ui/input/Input';
 
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { FilterContainer } from './../../features/prompt-filter/ui/FilterContainer';
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
 
@@ -11,17 +11,8 @@ export default function DevPage() {
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
       {/* 팝오버 테스트 */}
       <h2>팝오버 컴포넌트 + 체크박스 컴포넌트 테스트</h2>
-      <Popover>
-        <PopoverTrigger>Fabric</PopoverTrigger>
-        <PopoverContent>
-          {/* 체크박스 리스트 */}
-          <div className="grid grid-cols-2 gap-2 p-4">{/* ... */}</div>
-          {/* Done 버튼 */}
-          <PopoverClose className="w-full bg-[#1E2939] text-white py-3 rounded-b-lg">
-            Done
-          </PopoverClose>
-        </PopoverContent>
-      </Popover>
+      <FilterContainer />
+
       {/* 인풋 테스트 */}
       <h2>인풋 컴포넌트 테스트</h2>
       <Input placeholder="이름을 입력하세요" />
@@ -44,7 +35,6 @@ export default function DevPage() {
           PR 불러오기
         </button>
       </div>
-
       {/* PR 링크 복붙 */}
       {mode === 'link' && (
         <section className="space-y-3">
@@ -59,7 +49,6 @@ export default function DevPage() {
           </p>
         </section>
       )}
-
       {/* PR 불러오기 */}
       {mode === 'select' && (
         <section className="space-y-4">
@@ -95,7 +84,6 @@ export default function DevPage() {
           </ul>
         </section>
       )}
-
       {/* 문서 생성 옵션 */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">문서 생성 옵션</h2>
@@ -117,21 +105,18 @@ export default function DevPage() {
           </select>
         </div>
       </section>
-
       {/* 문서 생성하기 */}
       <section>
         <button className="w-full rounded-md bg-black py-3 text-sm text-white">
           문서 생성하기
         </button>
       </section>
-
       {/* PR 변경 영향도 */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">PR 변경 영향도</h2>
 
         <div className="rounded-md border p-6 text-sm text-gray-500">변경 영향도 시각화 영역</div>
       </section>
-
       {/* 생성된 문서 */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">생성된 문서</h2>
