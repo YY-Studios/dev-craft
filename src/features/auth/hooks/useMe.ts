@@ -7,7 +7,7 @@ export const useMe = () => {
     queryKey: ['me'],
     queryFn: async (): Promise<User | null> => {
       try {
-        return await clientApi<User>('/me');
+        return await clientApi<User>('me');
       } catch {
         return null;
       }
