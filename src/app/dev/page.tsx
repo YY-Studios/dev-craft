@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Input from '@/shared/ui/input/Input';
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
 
@@ -14,7 +14,12 @@ export default function DevPage() {
       <Popover>
         <PopoverTrigger>Fabric</PopoverTrigger>
         <PopoverContent>
-          <div>체크박스 자리</div>
+          {/* 체크박스 리스트 */}
+          <div className="grid grid-cols-2 gap-2 p-4">{/* ... */}</div>
+          {/* Done 버튼 */}
+          <PopoverClose className="w-full bg-[#1E2939] text-white py-3 rounded-b-lg">
+            Done
+          </PopoverClose>
         </PopoverContent>
       </Popover>
       {/* 인풋 테스트 */}
