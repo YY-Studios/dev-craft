@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Input from '@/shared/ui/input/Input';
 
 import { FilterContainer } from './../../features/prompt-filter/ui/FilterContainer';
+import Accordion from '@/shared/ui/accordion';
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
 
@@ -123,6 +124,23 @@ export default function DevPage() {
 
         <div className="rounded-md border p-6 text-sm text-gray-500">생성된 문서</div>
       </section>
+      <Accordion>
+        <Accordion.Item value="item-1">
+          <Accordion.Trigger>PR 변경 영향도</Accordion.Trigger>
+          <Accordion.Content>
+            <p className="p-4">아코디언 컨텐츠</p>
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
+
+      <Accordion accordion={false}>
+        <Accordion.Item value="item-2">
+          <Accordion.Trigger>생성된 문서</Accordion.Trigger>
+          <Accordion.Content>
+            <p className="p-4">아코디언이 아닙니다</p>
+          </Accordion.Content>
+        </Accordion.Item>
+      </Accordion>
     </div>
   );
 }
