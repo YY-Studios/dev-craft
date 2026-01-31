@@ -1,8 +1,7 @@
-import React from 'react';
 import { usePopover } from './PopoverContext';
 import { tv } from 'tailwind-variants';
-import IconChevronDown from '@/shared/assets/icons/Icon_chevron_down.svg';
-import IconChevronUp from '@/shared/assets/icons/Icon_chevron_up.svg';
+import chevronDown from '@/shared/assets/icons/Icon_chevron_down.svg';
+import chevronUp from '@/shared/assets/icons/Icon_chevron_up.svg';
 
 const triggerVariants = tv({
   base: 'flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors cursor-pointer',
@@ -33,7 +32,7 @@ export function PopoverTrigger({ children, className }: PopoverTriggerProps) {
       className={triggerVariants({ isOpen, className })}
     >
       {children}
-      {isOpen ? <IconChevronUp className="w-4 h-4" /> : <IconChevronDown className="w-4 h-4" />}
+      <img src={(isOpen ? chevronUp : chevronDown).src} className="w-4 h-4" alt="" aria-hidden />
     </button>
   );
 }
