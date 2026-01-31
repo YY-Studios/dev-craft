@@ -2,14 +2,36 @@
 
 import { useState } from 'react';
 import Input from '@/shared/ui/input/Input';
-
+import { useOrganizations } from '@/features/github/hooks/useOrganizations';
 import { FilterContainer } from './../../features/prompt-filter/ui/FilterContainer';
+import Button from '@/shared/ui/Button';
 import Accordion from '@/shared/ui/accordion';
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
-
+  const { data: orgs, refetch, isLoading, isFetched } = useOrganizations();
+  const [selectedOrigin, setSelectedOrigin] = useState<{} | null>(null);
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
+      {/* 조직 받아오기 테스트 */}
+      <Button onClick={() => refetch()}>조직 받아오기</Button>
+
+      {isLoading && <p>로딩 중...</p>}
+
+      {/* {isFetched && orgs?.map((org) => <li key={org.login}>{org.login}</li>)} */}
+      {`${selectedOrigin}`}
+      {isFetched &&
+        orgs?.map((org) => (
+          <label key={org.login}>
+            <input
+              type="radio"
+              name="origin"
+              value={org.login}
+              onChange={() => setSelectedOrigin(org)}
+            />
+            {org.login}
+          </label>
+        ))}
+
       {/* 팝오버 테스트 */}
       <h2>팝오버 컴포넌트 + 체크박스 컴포넌트 테스트</h2>
       <FilterContainer />
