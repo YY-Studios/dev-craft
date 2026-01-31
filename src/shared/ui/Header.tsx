@@ -29,13 +29,15 @@ export const Header = () => {
           </button>
         )}
 
-        <p>
-          유저이름:
-          <span>
-            <img src={user?.avatar_url || ''} alt="" className="w-5 h-5" />
-          </span>
-          {user?.username}
-        </p>
+        {user && (
+          <p>
+            유저이름:
+            <span>
+              {user.avatar_url && <img src={user.avatar_url} alt="" className="w-5 h-5" />}
+            </span>
+            {user.username}
+          </p>
+        )}
       </div>
     </header>
   );
