@@ -51,6 +51,7 @@ export default [
       'prettier/prettier': 'error',
       ...prettierConfig.rules,
       'react/react-in-jsx-scope': 'off',
+      'no-undef': 'off',
       'react/prop-types': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': ['warn', { allow: ['warn', 'error'] }],
