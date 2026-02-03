@@ -20,27 +20,43 @@ export async function GET(request: Request) {
   const user = await userRes.json();
 
   // github 내가 속한 조직들
-  const orgsRes = await fetch(`https://api.github.com/user/orgs?page=${page}&per_page=10`, {
+  const orgsRes = await fetch(`https://api.github.com/user/orgs?page=${page}&per_page=4`, {
     headers: { Authorization: `Bearer ${githubToken}` },
   });
 
   const orgs = await orgsRes.json();
 
-  // 추가: Link 헤더에서 마지막 페이지 번호 추출
+  // Link 헤더에서 마지막 페이지 번호 추출
   const linkHeader = orgsRes.headers.get('Link');
-  const lastMatch = linkHeader?.match(/page=(\d+)>; rel="last"/);
-  const totalPages = lastMatch ? parseInt(lastMatch[1]) : 1;
 
-  // 수정: pagination 정보 포함해서 응답
+  let totalPages = 1;
+
+  if (linkHeader) {
+    //  page= 뒤의 숫자만 찾고, 그 뒤에 뭐가 오든 상관없이
+    const lastMatch = linkHeader.match(/page=(\d+)[^>]*>;\s*rel="last"/);
+
+    if (lastMatch) {
+      totalPages = parseInt(lastMatch[1]);
+    } else if (linkHeader.includes('rel="prev"')) {
+      const prevMatch = linkHeader.match(/page=(\d+)[^>]*>;\s*rel="prev"/);
+      if (prevMatch) {
+        totalPages = parseInt(prevMatch[1]) + 1;
+      }
+    }
+  }
+
+  // pagination 정보 포함해서 응답
   return NextResponse.json({
     data: [
-      { type: 'user', login: user.login, avatar_url: user.avatar_url },
+      ...(page === '1'
+        ? [{ type: 'user' as const, login: user.login, avatar_url: user.avatar_url }]
+        : []),
       ...orgs.map((org: any) => ({
         type: 'org',
         login: org.login,
         avatar_url: org.avatar_url,
       })),
     ],
-    totalPages, // 추가: 전체 페이지 수
+    totalPages, // 전체 페이지 수
   });
 }

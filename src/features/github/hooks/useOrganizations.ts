@@ -12,11 +12,11 @@ interface OrganizationResponse {
   totalPages: number;
 }
 
-export const useOrganizations = () => {
+export const useOrganizations = (page: number) => {
   return useQuery<OrganizationResponse>({
-    queryKey: ['organizations'],
+    queryKey: ['organizations', page],
     queryFn: async (): Promise<OrganizationResponse> => {
-      const data = await clientApi<OrganizationResponse>('auth/github/organizations');
+      const data = await clientApi<OrganizationResponse>(`auth/github/organizations?page=${page}`);
       console.log('서버에서 받아온 데이터:', data);
       return data;
     },
