@@ -7,11 +7,16 @@ interface Organization {
   avatar_url: string;
 }
 
+interface OrganizationResponse {
+  data: Organization[];
+  totalPages: number;
+}
+
 export const useOrganizations = () => {
-  return useQuery<Organization[]>({
+  return useQuery<OrganizationResponse>({
     queryKey: ['organizations'],
-    queryFn: async (): Promise<Organization[]> => {
-      const data = await clientApi<Organization[]>('auth/github/organizations');
+    queryFn: async (): Promise<OrganizationResponse> => {
+      const data = await clientApi<OrganizationResponse>('auth/github/organizations');
       console.log('서버에서 받아온 데이터:', data);
       return data;
     },

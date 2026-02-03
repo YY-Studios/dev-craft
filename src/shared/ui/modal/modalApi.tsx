@@ -70,4 +70,19 @@ export const modal = {
       });
     });
   },
+
+  custom: (component: React.ReactNode, options?: ModalOptions) => {
+    return new Promise<boolean>((resolve) => {
+      const { open, close } = getModalController();
+
+      const id = open({
+        component: (
+          <Modal.Content>
+            <Modal.Body>{component}</Modal.Body>
+          </Modal.Content>
+        ),
+        onClose: () => resolve(false),
+      });
+    });
+  },
 };
