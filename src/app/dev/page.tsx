@@ -1,13 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '@/shared/ui/input/Input';
 import { FilterContainer } from './../../features/prompt-filter/ui/FilterContainer';
 import Accordion from '@/shared/ui/accordion';
 import { PullRequestwarp } from '@/features/github/ui/PullRequestwarp';
+import { useRepoStore } from '@/shared/stores/useRepoStore';
 
 export default function DevPage() {
+  const { selectOrg, selectRepo } = useRepoStore();
+  const hasRepoSelectd = !!selectOrg && !!selectRepo;
   const [mode, setMode] = useState<'link' | 'select'>('link');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && hasRepoSelectd) {
+      setMode('select');
+    }
+  }, [isMounted, selectOrg, selectRepo]);
+
+  if (!isMounted) return null;
+
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
       {/* 팝오버 테스트 */}
