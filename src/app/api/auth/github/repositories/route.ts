@@ -31,10 +31,23 @@ export async function GET(request: Request) {
 
   const repos = await repoRes.json();
 
-  // Link 헤더에서 totalPages 추출
   const linkHeader = repoRes.headers.get('Link');
-  const lastMatch = linkHeader?.match(/page=(\d+)>; rel="last"/);
-  const totalPages = lastMatch ? parseInt(lastMatch[1]) : 1;
+
+  let totalPages = 1;
+
+  if (linkHeader) {
+    //  page= 뒤의 숫자만 찾고, 그 뒤에 뭐가 오든 상관없이
+    const lastMatch = linkHeader.match(/page=(\d+)[^>]*>;\s*rel="last"/);
+
+    if (lastMatch) {
+      totalPages = parseInt(lastMatch[1]);
+    } else if (linkHeader.includes('rel="prev"')) {
+      const prevMatch = linkHeader.match(/page=(\d+)[^>]*>;\s*rel="prev"/);
+      if (prevMatch) {
+        totalPages = parseInt(prevMatch[1]) + 1;
+      }
+    }
+  }
 
   return NextResponse.json({
     data: repos,

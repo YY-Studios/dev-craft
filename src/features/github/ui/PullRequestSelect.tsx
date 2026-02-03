@@ -17,26 +17,25 @@ export const PullRequsetSelect = () => {
 
   if (isLoading) return <p>로딩 중...</p>;
 
-  console.log('pr데이터', pulls);
-
   return (
     <div>
       <ul className="space-y-3">
-        {pulls?.data.map((pr) => (
-          <li key={pr.id} className="flex items-start gap-3 rounded-lg border p-4">
-            <label className="block w-full" htmlFor={`pr-${pr.number}`}>
-              <input type="radio" name="pr" id={`pr-${pr.number}`} />
-              <div>
-                <h3 className="font-medium">
-                  PR #{pr.number}: {pr.title}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {selectOrg.login}/{selectRepo} · {pr.state}
-                </p>
-              </div>
-            </label>
-          </li>
-        ))}
+        {isFetched &&
+          pulls?.data.map((pr) => (
+            <li key={pr.id} className="flex items-start gap-3 rounded-lg border p-4">
+              <label className="block w-full" htmlFor={`pr-${pr.number}`}>
+                <input type="radio" name="pr" id={`pr-${pr.number}`} />
+                <div>
+                  <h3 className="font-medium">
+                    PR #{pr.number}: {pr.title}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {selectOrg.login}/{selectRepo} · {pr.state}
+                  </p>
+                </div>
+              </label>
+            </li>
+          ))}
       </ul>
       <div className="flex justify-center mt-5">
         <Pagination currentPage={page} totalPages={pulls?.totalPages || 1} onPageChange={setPage} />

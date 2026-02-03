@@ -1,15 +1,14 @@
 import { useRepositories } from '@/features/github/hooks/useRepositories';
 import { selectedOrgType } from '@/widgets/pull-request-step/PullRequestStepWrap';
+import { useState } from 'react';
+import Pagination from '@/shared/ui/Pagination';
 interface RepositorySelectProps {
   selectOrg: selectedOrgType;
   setSelectRepo: (value: string) => void;
 }
 export const RepositorySelect = ({ selectOrg, setSelectRepo }: RepositorySelectProps) => {
-  const { data: repos, refetch, isLoading, isFetched } = useRepositories({ selectOrg, page: 1 });
-
-  console.log('레포지토리 데이터:', repos);
-  console.log('로딩 중:', isLoading);
-  console.log('데이터 있음:', isFetched);
+  const [page, setPage] = useState(1);
+  const { data: repos, isLoading, isFetched } = useRepositories({ selectOrg, page });
   return (
     <div>
       {isLoading && <p>데이터 불러오는 중...</p>}
@@ -36,6 +35,9 @@ export const RepositorySelect = ({ selectOrg, setSelectRepo }: RepositorySelectP
             </li>
           ))}
       </ul>
+      <div className="flex justify-center mt-5">
+        <Pagination currentPage={page} totalPages={repos?.totalPages || 1} onPageChange={setPage} />
+      </div>
     </div>
   );
 };
