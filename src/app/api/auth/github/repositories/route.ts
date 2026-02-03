@@ -11,18 +11,18 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const page = searchParams.get('page') || '1';
-  const login = searchParams.get('login');
+  const repo = searchParams.get('login');
   const type = searchParams.get('type'); // 'user' 또는 'org'
 
   // orgName 체크
-  if (!login || !type) {
+  if (!repo || !type) {
     return NextResponse.json({ message: '조직명이 필요합니다' }, { status: 400 });
   }
 
   const baseUrl =
     type == 'user'
-      ? `https://api.github.com/users/${login}/repos`
-      : `https://api.github.com/orgs/${login}/repos`;
+      ? `https://api.github.com/users/${repo}/repos`
+      : `https://api.github.com/orgs/${repo}/repos`;
 
   // 내가 선택한 조직에 대한 레포지토리 리스트 불러오기
   const repoRes = await fetch(`${baseUrl}?page=${page}&per_page=10`, {
@@ -30,7 +30,6 @@ export async function GET(request: Request) {
   });
 
   const repos = await repoRes.json();
-  console.log('여기', repos);
 
   // Link 헤더에서 totalPages 추출
   const linkHeader = repoRes.headers.get('Link');

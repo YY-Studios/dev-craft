@@ -3,15 +3,11 @@
 import { useState } from 'react';
 import Input from '@/shared/ui/input/Input';
 import { FilterContainer } from './../../features/prompt-filter/ui/FilterContainer';
-import Button from '@/shared/ui/Button';
 import Accordion from '@/shared/ui/accordion';
-import { useModal } from '@/shared/ui/modal/ModalProvider';
-import { Modal } from '@/shared/ui/modal/ModalRoot';
-import { PullRequestStepWrap } from '@/widgets/pull-request-step/PullRequestStepWrap';
+import { PullRequestwarp } from '@/features/github/ui/PullRequestwarp';
 
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
-  const { open, close } = useModal();
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
       {/* 팝오버 테스트 */}
@@ -54,52 +50,7 @@ export default function DevPage() {
         </section>
       )}
       {/* PR 불러오기 */}
-      {mode === 'select' && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">PR 불러오기</h2>
-            <Button
-              onClick={() => {
-                const id = open({
-                  component: (
-                    <Modal.Content>
-                      <Modal.Body>
-                        <PullRequestStepWrap onClose={() => close(id)} />
-                      </Modal.Body>
-                    </Modal.Content>
-                  ),
-                });
-              }}
-            >
-              repository 선택
-            </Button>
-          </div>
-
-          <input
-            type="text"
-            placeholder="PR 제목 또는 번호 검색"
-            className="w-full rounded-md border px-3 py-2 text-sm"
-          />
-
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3 rounded-lg border p-4">
-              <input type="radio" name="pr" />
-              <div>
-                <h3 className="font-medium">PR #123: 로그인 리팩토링</h3>
-                <p className="text-sm text-gray-500">owner/repo · Open</p>
-              </div>
-            </li>
-
-            <li className="flex items-start gap-3 rounded-lg border p-4">
-              <input type="radio" name="pr" />
-              <div>
-                <h3 className="font-medium">PR #122: UI 컴포넌트 정리</h3>
-                <p className="text-sm text-gray-500">owner/repo · Merged</p>
-              </div>
-            </li>
-          </ul>
-        </section>
-      )}
+      {mode === 'select' && <PullRequestwarp />}
       {/* 문서 생성 옵션 */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">문서 생성 옵션</h2>
