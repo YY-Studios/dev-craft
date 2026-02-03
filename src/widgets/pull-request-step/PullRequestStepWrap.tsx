@@ -3,6 +3,7 @@ import Button from '@/shared/ui/Button';
 import { useState } from 'react';
 import { modal } from '@/shared/ui/modal/modalApi';
 import { RepositorySelect } from '@/features/github/ui/RepositorySelect';
+import { useRepoStore } from '@/shared/stores/useRepoStore';
 
 interface PullRequestStepWrapProps {
   onClose: () => void;
@@ -17,6 +18,8 @@ export const PullRequestStepWrap = ({ onClose }: PullRequestStepWrapProps) => {
   const [selectOrg, setSelectedOrg] = useState<selectedOrgType | null>(null);
   const [selectRepo, setSelectRepo] = useState<string>('');
 
+  const { setSelectOrg } = useRepoStore();
+
   const handleOrganization = () => {
     if (!selectOrg) {
       modal.alert('조직을 선택주세요');
@@ -25,11 +28,13 @@ export const PullRequestStepWrap = ({ onClose }: PullRequestStepWrapProps) => {
     setStep('repo');
   };
   const handleRepository = () => {
-    if (!selectRepo) {
+    if (!selectRepo || !selectOrg) {
       modal.alert('레포지토리를 선택주세요');
       return;
     }
     alert(selectRepo);
+    setSelectOrg(selectOrg, selectRepo);
+    onClose();
   };
 
   return (
