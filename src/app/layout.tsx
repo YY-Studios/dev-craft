@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { Header } from '@/shared/ui/Header';
 import './globals.css';
 import { QueryProvider } from '@/shared/providers/QueryProvider';
+import { ModalProvider } from '@/shared/ui/modal/ModalProvider';
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -29,8 +30,10 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <QueryProvider>
           {/* todo: header 교체 */}
-          <Header />
-          <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+          <ModalProvider>
+            <Header />
+            <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+          </ModalProvider>
         </QueryProvider>
       </body>
     </html>

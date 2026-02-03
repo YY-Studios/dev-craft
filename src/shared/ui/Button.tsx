@@ -56,13 +56,12 @@ type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const base =
   'inline-flex items-center justify-center rounded-md px-4 py-2 transition-colors cursor-pointer ' +
-  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-2 ' +
+  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-2 ' +
   'disabled:pointer-events-none disabled:opacity-50';
 
-const primary = 'bg-primary text-primary-foreground hover:bg-primary/90';
+const primary = 'bg-gray-900 text-white hover:bg-gray-800';
 
-const secondary =
-  'bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80';
+const secondary = 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50';
 
 export const Button = ({
   children,

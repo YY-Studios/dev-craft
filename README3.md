@@ -1,115 +1,85 @@
-아, 오케이.
-그럼 퍼즐이 딱 맞춰졌어. **이 말이 핵심 힌트야.**
+아, 쉽게 설명할게요!
 
-> “이미 다른 데서는 내 조직들을 다 가져왔었다”
+**방법 2는 이런 흐름이에요:**
 
-👉 그럼 **그때 쓴 API가 지금 이 API랑 달라.**
+```typescriptreact
+// 1. 조직/레포 선택을 하나의 컴포넌트로 만들기
+function OrganizationAndRepoSelector() {
+  const [step, setStep] = useState<'org' | 'repo'>('org'); // 🔹 단계 관리
+  const [selectedOrg, setSelectedOrg] = useState('');
+
+  return (
+    <div>
+      {/* 조직 선택 화면 */}
+      {step === 'org' && (
+        <div>
+          <h2>조직 선택</h2>
+          <OrganizationSelect
+            onSelect={(org) => {
+              setSelectedOrg(org);
+              setStep('repo'); // 🔹 다음 단계로!
+            }}
+          />
+        </div>
+      )}
+
+      {/* 레포 선택 화면 */}
+      {step === 'repo' && (
+        <div>
+          <button onClick={() => setStep('org')}>← 뒤로</button>
+          <h2>레포지토리 선택</h2>
+          <RepositorySelect orgName={selectedOrg} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// 2. 버튼 클릭 시 이 컴포넌트를 모달로 띄우기
+function MyPage() {
+  const { open } = useModal();
+
+  return (
+    <button onClick={() => {
+      open({ component: <OrganizationAndRepoSelector /> }); // 🔹 모달 열기
+    }}>
+      조직 선택
+    </button>
+  );
+}
+```
+
+**핵심:**
+
+- 모달 껍데기는 `useModal()`이 알아서 처리
+- 모달 안에서 **조직 → 레포** 단계 전환은 컴포넌트 내부 `useState`로 처리
+
+이해되나요?
 
 ---
 
-## 핵심 결론 (정답부터)
-
-지금 쓰는 API:
-
-```
-GET /user/orgs
-```
-
-이건 ❌ **멤버십이 Public인 조직만** 내려줌
+---
 
 ---
 
-## 그런데 “다른 데서 다 가져왔던” 경우는 거의 100% 이거였어 👇
+import { useModal } from '@/shared/ui/modal/ModalProvider';
 
-### ✅ 실제로 조직을 전부 가져오는 API
+function MyPage() {
+const { open } = useModal();
 
-```
-GET /user/memberships/orgs
-```
-
-이 API는:
-
-- ✔ Public 조직
-- ✔ Private 조직
-- ✔ 내가 Owner인 조직
-  👉 **전부 내려줌**
-
-(대신 응답 구조가 조금 다름)
-
----
-
-## 왜 GitHub가 API를 나눠놨냐면
-
-| API                      | 용도                          |
-| ------------------------ | ----------------------------- |
-| `/user/orgs`             | “외부에 공개해도 되는 조직”   |
-| `/user/memberships/orgs` | “내 계정 기준 실제 소속 조직” |
-
-GitHub 웹, 대시보드, 관리 툴들은
-👉 **`/user/memberships/orgs` 사용함**
-
----
-
-## 그래서 지금 상황 정리
-
-- 네 계정엔 조직 많음 ✅
-- `/user/orgs` → 공개 멤버십만 → `[]` ❗
-- 예전에 본 곳 → `/user/memberships/orgs` → 전부 나옴 ✅
-
-👉 **버그 아님 / 설정 아님 / API 선택 문제**
-
----
-
-## 바로 해결하는 수정 (이게 정답)
-
-### 🔁 이 줄 바꿔
-
-```ts
-https://api.github.com/user/orgs
-```
-
-### ✅ 이렇게
-
-```ts
-https://api.github.com/user/memberships/orgs
-```
-
----
-
-## 응답 구조 차이 (중요)
-
-`/user/memberships/orgs` 응답은 이렇게 생김:
-
-```json
-[
-  {
-    "organization": {
-      "login": "YY-Studios",
-      "avatar_url": "..."
-    },
-    "role": "admin",
-    "state": "active"
-  }
-]
-```
-
-그래서 매핑도 이렇게 바꿔야 함:
-
-```ts
-...orgs.map((item: any) => ({
-  type: 'org',
-  login: item.organization.login,
-  avatar_url: item.organization.avatar_url,
-}))
-```
-
----
-
-## 한 줄 요약 (확정)
-
-- ❌ `/user/orgs` → 공개 멤버십만
-- ✅ `/user/memberships/orgs` → **진짜 전부**
-- 네가 예전에 봤던 건 **무조건 이 API**
-
-이제 이걸로 다시 호출해봐.
-조직들 쫙 나오면, 그다음은 **org → repo → PR** 자연스럽게 이어가면 돼.
+return (
+<button onClick={() => {
+open({
+component: (
+<Modal.Content>
+<Modal.Body>
+<OrganizationAndRepoSelector />
+</Modal.Body>
+</Modal.Content>
+)
+});
+}}>
+조직 선택
+</button>
+);
+}

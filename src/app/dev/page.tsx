@@ -2,40 +2,21 @@
 
 import { useState } from 'react';
 import Input from '@/shared/ui/input/Input';
-import { useOrganizations } from '@/features/github/hooks/useOrganizations';
 import { FilterContainer } from './../../features/prompt-filter/ui/FilterContainer';
 import Button from '@/shared/ui/Button';
 import Accordion from '@/shared/ui/accordion';
+import { useModal } from '@/shared/ui/modal/ModalProvider';
+import { Modal } from '@/shared/ui/modal/ModalRoot';
+import { PullRequestStepWrap } from '@/widgets/pull-request-step/PullRequestStepWrap';
+
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
-  const { data: orgs, refetch, isLoading, isFetched } = useOrganizations();
-  const [selectedOrigin, setSelectedOrigin] = useState<{} | null>(null);
+  const { open } = useModal();
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
-      {/* 조직 받아오기 테스트 */}
-      <Button onClick={() => refetch()}>조직 받아오기</Button>
-
-      {isLoading && <p>로딩 중...</p>}
-
-      {/* {isFetched && orgs?.map((org) => <li key={org.login}>{org.login}</li>)} */}
-      {`${selectedOrigin}`}
-      {isFetched &&
-        orgs?.map((org) => (
-          <label key={org.login}>
-            <input
-              type="radio"
-              name="origin"
-              value={org.login}
-              onChange={() => setSelectedOrigin(org)}
-            />
-            {org.login}
-          </label>
-        ))}
-
       {/* 팝오버 테스트 */}
       <h2>팝오버 컴포넌트 + 체크박스 컴포넌트 테스트</h2>
       <FilterContainer />
-
       {/* 인풋 테스트 */}
       <h2>인풋 컴포넌트 테스트</h2>
       <Input placeholder="이름을 입력하세요" />
@@ -77,9 +58,21 @@ export default function DevPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">PR 불러오기</h2>
-            <button className="rounded-md bg-black px-4 py-2 text-sm text-white">
+            <Button
+              onClick={() =>
+                open({
+                  component: (
+                    <Modal.Content>
+                      <Modal.Body>
+                        <PullRequestStepWrap />
+                      </Modal.Body>
+                    </Modal.Content>
+                  ),
+                })
+              }
+            >
               repository 선택
-            </button>
+            </Button>
           </div>
 
           <input
@@ -143,7 +136,6 @@ export default function DevPage() {
           </Accordion.Content>
         </Accordion.Item>
       </Accordion>
-
       {/* 생성된 문서 */}
       <Accordion accordion={false}>
         <Accordion.Item value="item-2">

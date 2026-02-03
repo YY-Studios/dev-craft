@@ -48,6 +48,7 @@ export default [
       react: { version: 'detect' },
     },
     rules: {
+      'no-unused-vars': 'off',
       'prettier/prettier': 'error',
       ...prettierConfig.rules,
       'react/react-in-jsx-scope': 'off',
