@@ -22,11 +22,8 @@ export const PullRequestStepWrap = ({ onClose }: PullRequestStepWrapProps) => {
       modal.alert('조직을 선택주세요');
       return;
     }
-    alert(selectOrg.login);
-
     setStep('repo');
   };
-
   const handleRepository = () => {
     if (!selectRepo) {
       modal.alert('레포지토리를 선택주세요');
@@ -39,18 +36,22 @@ export const PullRequestStepWrap = ({ onClose }: PullRequestStepWrapProps) => {
     <>
       {step === 'org' && (
         <div>
-          <h2>step1 조직선택</h2>
+          <h2 className="text-2xl font-bold mb-2">조직선택</h2>
           <OrganizationSelect setSelectedOrg={setSelectedOrg} />
-          <Button onClick={() => handleOrganization()}>선택</Button>
-          <Button onClick={onClose}>취소</Button>
+          <div className="flex items-center justify-end gap-2 mt-4">
+            <Button onClick={() => handleOrganization()}>다음</Button>
+            <Button onClick={onClose}>취소</Button>
+          </div>
         </div>
       )}
       {step === 'repo' && selectOrg && (
         <div>
-          <h2>step2 레포선택</h2>
+          <h2 className="text-2xl font-bold mb-2">레포선택</h2>
           <RepositorySelect selectOrg={selectOrg} setSelectRepo={setSelectRepo} />
-          <Button onClick={() => handleRepository()}>선택</Button>
-          <Button>취소(뒤로가기, 조직선택으로 가기)</Button>
+          <div className="flex items-center justify-end gap-2 mt-4">
+            <Button onClick={() => handleRepository()}>선택</Button>
+            <Button onClick={() => setStep('org')}>이전</Button>
+          </div>
         </div>
       )}
     </>
