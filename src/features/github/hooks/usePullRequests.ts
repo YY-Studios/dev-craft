@@ -26,15 +26,14 @@ interface PullRequestResponse {
 interface UsePullRequestsProps {
   selectOrg?: selectedOrgType | null;
   selectRepo: string;
-  page?: number;
 }
 
-export const usePullRequests = ({ selectOrg, selectRepo, page = 1 }: UsePullRequestsProps) => {
+export const usePullRequests = ({ selectOrg, selectRepo }: UsePullRequestsProps) => {
   return useQuery<PullRequestResponse>({
-    queryKey: ['pullrequests', selectOrg?.login, selectRepo, page],
+    queryKey: ['pullrequests', selectOrg?.login, selectRepo],
     queryFn: async (): Promise<PullRequestResponse> => {
       const data = await clientApi<PullRequestResponse>(
-        `auth/github/pullRequests?owner=${selectOrg?.login}&repo=${selectRepo}&page=${page}`,
+        `auth/github/pullRequests?owner=${selectOrg?.login}&repo=${selectRepo}`,
       );
       return data;
     },

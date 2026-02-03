@@ -1,11 +1,14 @@
 import Button from '@/shared/ui/Button';
+import { useState } from 'react';
 import { PullRequsetSelect } from './PullRequestSelect';
 import { Modal } from '@/shared/ui/modal/ModalRoot';
 import { PullRequestStepWrap } from '@/widgets/pull-request-step/PullRequestStepWrap';
 import { useModal } from '@/shared/ui/modal/ModalProvider';
+import { PullRequsetSearch } from './PullRequsetSearch';
 
 export const PullRequestwarp = () => {
   const { open, close } = useModal();
+  const [searchQuery, setSearchQuery] = useState('');
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
@@ -26,14 +29,8 @@ export const PullRequestwarp = () => {
           repository 선택
         </Button>
       </div>
-
-      <input
-        type="text"
-        placeholder="PR 제목 또는 번호 검색"
-        className="w-full rounded-md border px-3 py-2 text-sm"
-      />
-
-      <PullRequsetSelect />
+      <PullRequsetSearch onSearch={setSearchQuery} />
+      <PullRequsetSelect searchQuery={searchQuery} />
     </section>
   );
 };

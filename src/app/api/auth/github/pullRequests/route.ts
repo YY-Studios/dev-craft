@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
   const baseUrl = `https://api.github.com/repos/${owner}/${repo}/pulls`;
 
-  const prRes = await fetch(`${baseUrl}?page=${page}&per_page=5&state=all`, {
+  const prRes = await fetch(`${baseUrl}?state=all`, {
     headers: { Authorization: `Bearer ${githubToken}` },
   });
 
