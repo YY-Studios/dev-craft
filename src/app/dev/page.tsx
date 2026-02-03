@@ -11,7 +11,7 @@ import { PullRequestStepWrap } from '@/widgets/pull-request-step/PullRequestStep
 
 export default function DevPage() {
   const [mode, setMode] = useState<'link' | 'select'>('link');
-  const { open } = useModal();
+  const { open, close } = useModal();
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
       {/* 팝오버 테스트 */}
@@ -59,17 +59,17 @@ export default function DevPage() {
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">PR 불러오기</h2>
             <Button
-              onClick={() =>
-                open({
+              onClick={() => {
+                const id = open({
                   component: (
                     <Modal.Content>
                       <Modal.Body>
-                        <PullRequestStepWrap />
+                        <PullRequestStepWrap onClose={() => close(id)} />
                       </Modal.Body>
                     </Modal.Content>
                   ),
-                })
-              }
+                });
+              }}
             >
               repository 선택
             </Button>

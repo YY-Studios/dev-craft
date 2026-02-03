@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useOrganizations } from '../hooks/useOrganizations';
 interface OrganizationSelectProps {
-  onSelect: (value: string) => void;
+  setSelectedOrg: (org: { type: 'org' | 'user'; login: string }) => void;
 }
-export const OrganizationSelect = ({ onSelect }: OrganizationSelectProps) => {
+export const OrganizationSelect = ({ setSelectedOrg }: OrganizationSelectProps) => {
   const { data: orgs, refetch, isLoading, isFetched } = useOrganizations();
 
   useEffect(() => {
@@ -24,7 +24,7 @@ export const OrganizationSelect = ({ onSelect }: OrganizationSelectProps) => {
                 value={org.login}
                 className="w-4 h-4 accent-gray-900 cursor-pointer"
                 onChange={() => {
-                  onSelect(org.login);
+                  setSelectedOrg({ type: org.type, login: org.login });
                 }}
               />
               <label

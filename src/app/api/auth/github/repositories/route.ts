@@ -1,6 +1,3 @@
-`orgName`을 `searchParams`에서 가져와야 하고, 응답도 반환해야 해요!
-
-```typescript
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -14,40 +11,34 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const page = searchParams.get('page') || '1';
-  const orgName = searchParams.get('org'); // 🔹 추가: 조직명 가져오기
+  const login = searchParams.get('login');
+  const type = searchParams.get('type'); // 'user' 또는 'org'
 
-  // 🔹 추가: orgName 체크
-  if (!orgName) {
+  // orgName 체크
+  if (!login || !type) {
     return NextResponse.json({ message: '조직명이 필요합니다' }, { status: 400 });
   }
 
+  const baseUrl =
+    type == 'user'
+      ? `https://api.github.com/users/${login}/repos`
+      : `https://api.github.com/orgs/${login}/repos`;
+
   // 내가 선택한 조직에 대한 레포지토리 리스트 불러오기
-  const repoRes = await fetch(
-    `https://api.github.com/orgs/${orgName}/repos?page=${page}&per_page=10`,
-    {
-      headers: { Authorization: `Bearer ${githubToken}` },
-    },
-  );
+  const repoRes = await fetch(`${baseUrl}?page=${page}&per_page=10`, {
+    headers: { Authorization: `Bearer ${githubToken}` },
+  });
 
   const repos = await repoRes.json();
+  console.log('여기', repos);
 
-  // 🔹 추가: Link 헤더에서 totalPages 추출
+  // Link 헤더에서 totalPages 추출
   const linkHeader = repoRes.headers.get('Link');
   const lastMatch = linkHeader?.match(/page=(\d+)>; rel="last"/);
   const totalPages = lastMatch ? parseInt(lastMatch[1]) : 1;
 
-  // 🔹 추가: 응답 반환
   return NextResponse.json({
     data: repos,
     totalPages,
   });
 }
-```
-
-이제 프론트에서 이렇게 호출하면 돼요:
-
-```typescript
-const data = await clientApi<RepositoryResponse>(`auth/github/repos?org=${orgName}&page=${page}`);
-```
-
-완성!
