@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react';
+'use client';
+
+import { useState } from 'react';
 import { useOrganizations } from '../hooks/useOrganizations';
+import Pagination from '@/shared/ui/Pagination';
 interface OrganizationSelectProps {
   setSelectedOrg: (org: { type: 'org' | 'user'; login: string }) => void;
 }
 export const OrganizationSelect = ({ setSelectedOrg }: OrganizationSelectProps) => {
-  const { data: orgs, refetch, isLoading, isFetched } = useOrganizations();
+  const [page, setPage] = useState(1);
+  const { data: orgs, refetch, isLoading, isFetched } = useOrganizations(page);
 
-  useEffect(() => {
-    refetch();
-  }, []);
-  if (!orgs) return;
+  if (!orgs) return null;
   return (
     <>
       {isLoading && <p>데이터 불러오는 중...</p>}
@@ -36,6 +37,10 @@ export const OrganizationSelect = ({ setSelectedOrg }: OrganizationSelectProps) 
             </li>
           ))}
       </ul>
+
+      <div className="flex justify-center mt-5">
+        <Pagination currentPage={page} totalPages={orgs?.totalPages || 1} onPageChange={setPage} />
+      </div>
     </>
   );
 };
