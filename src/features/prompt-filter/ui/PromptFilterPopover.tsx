@@ -7,9 +7,7 @@ import type { PromptFilterKey } from '../types';
 interface FilterPopoverProps {
   label: string;
   options: readonly { key: PromptFilterKey; label: string }[];
-  // eslint-disable-next-line no-unused-vars
   isChecked: (key: PromptFilterKey) => boolean;
-  // eslint-disable-next-line no-unused-vars
   onToggle: (key: PromptFilterKey) => void;
 }
 
