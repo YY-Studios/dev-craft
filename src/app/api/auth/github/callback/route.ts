@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
 
   // access token으로 GitHub 사용자 정보 가져오기
   const githubUser = await getGithubUserByToken(github_access_token);
-  console.log('githubUser:', githubUser);
 
   // 여기서 githubUser를다시하자
   const users = await serverApi<User[]>('/user?on_conflict=github_user_id', {
