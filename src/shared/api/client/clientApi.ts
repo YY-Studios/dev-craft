@@ -1,9 +1,16 @@
 import { ApiError } from '@/shared/api/error/ApiError';
 
-export async function clientApi<T>(path: string): Promise<T> {
+interface ClientApiOptions {
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  body?: unknown;
+}
+
+export async function clientApi<T>(path: string, options?: ClientApiOptions): Promise<T> {
   const res = await fetch(`/api/${path}`, {
-    // 로그인 쿠키를 API 요청에 같이 실어 보내는 옵션
+    method: options?.method ?? 'GET',
     credentials: 'include',
+    headers: options?.body ? { 'Content-Type': 'application/json' } : undefined,
+    body: options?.body ? JSON.stringify(options.body) : undefined,
   });
 
   if (!res.ok) {
