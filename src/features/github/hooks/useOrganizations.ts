@@ -17,7 +17,6 @@ export const useOrganizations = (page: number) => {
     queryKey: ['organizations', page],
     queryFn: async (): Promise<OrganizationResponse> => {
       const data = await clientApi<OrganizationResponse>(`auth/github/organizations?page=${page}`);
-      console.log('서버에서 받아온 데이터:', data);
       return data;
     },
     staleTime: 1000 * 60 * 5,
