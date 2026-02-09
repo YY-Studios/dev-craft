@@ -2,6 +2,7 @@
 
 import { useRepoStore } from '@/shared/stores/useRepoStore';
 import { usePullRequests } from '../hooks/usePullRequests';
+import { PRListSkeleton } from '@/shared/ui/loding/PRListSkeleton';
 
 interface PullRequestSelectProps {
   searchQuery: string;
@@ -15,7 +16,7 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
     return <p>레포지토리를 먼저 선택해주세요</p>;
   }
 
-  if (isLoading) return <p>로딩 중...</p>;
+  if (isLoading) return <PRListSkeleton count={5} />;
 
   // 클라이언트 필터링 로직
   const filteredPRs = pulls?.data.filter((pr) => {

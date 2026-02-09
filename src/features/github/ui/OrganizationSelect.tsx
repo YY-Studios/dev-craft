@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useOrganizations } from '../hooks/useOrganizations';
 import Pagination from '@/shared/ui/Pagination';
+import { OrgListSkeleton } from '@/shared/ui/loding/OrgListSkeleton';
 interface OrganizationSelectProps {
   setSelectedOrg: (org: { type: 'org' | 'user'; login: string }) => void;
 }
@@ -10,10 +11,13 @@ export const OrganizationSelect = ({ setSelectedOrg }: OrganizationSelectProps) 
   const [page, setPage] = useState(1);
   const { data: orgs, refetch, isLoading, isFetched } = useOrganizations(page);
 
+  if (isLoading) {
+    return <OrgListSkeleton count={5} />;
+  }
+
   if (!orgs) return null;
   return (
     <>
-      {isLoading && <p>데이터 불러오는 중...</p>}
       <ul className="flex flex-col gap-4">
         {isFetched &&
           orgs.data.map((org) => (

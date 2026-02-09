@@ -2,6 +2,7 @@ import { useRepositories } from '@/features/github/hooks/useRepositories';
 import { selectedOrgType } from '@/widgets/pull-request-step/PullRequestStepWrap';
 import { useState } from 'react';
 import Pagination from '@/shared/ui/Pagination';
+import { RepoSkeleton } from '@/shared/ui/loding/RepoListSkeleton';
 interface RepositorySelectProps {
   selectOrg: selectedOrgType;
   setSelectRepo: (value: string) => void;
@@ -9,9 +10,15 @@ interface RepositorySelectProps {
 export const RepositorySelect = ({ selectOrg, setSelectRepo }: RepositorySelectProps) => {
   const [page, setPage] = useState(1);
   const { data: repos, isLoading, isFetched } = useRepositories({ selectOrg, page });
+
+  if (isLoading) {
+    return <RepoSkeleton count={5} />;
+  }
+
+  if (!repos) return null;
+
   return (
     <div>
-      {isLoading && <p>데이터 불러오는 중...</p>}
       <ul className="flex flex-col gap-4">
         {isFetched &&
           repos?.data.map((repo) => (
