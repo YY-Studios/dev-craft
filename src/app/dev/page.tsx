@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Input from '@/shared/ui/input/Input';
 import { FilterContainer } from './../../features/prompt-filter/ui/FilterContainer';
 import Accordion from '@/shared/ui/accordion';
 import { PullRequestwarp } from '@/features/github/ui/PullRequestwarp';
 import { useRepoStore } from '@/shared/stores/useRepoStore';
 import { Button } from './../../shared/ui/Button';
 import { useCallN8nWebbhook } from '@/features/n8n/hooks/useCallN8nWebhook';
+import { LoadingAnimation } from '@/shared/ui/loding/LoadingAnimation';
 
 export default function DevPage() {
   const { selectOrg, selectRepo } = useRepoStore();
@@ -43,6 +43,9 @@ export default function DevPage() {
   console.log(copyData);
   return (
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
+      {/* 토글 */}
+      <h2>로딩 애니메이션</h2>
+      <LoadingAnimation />
       {/* 토글 */}
       <div className="flex gap-2">
         <Button variant="tab" isActive={mode === 'link'} onClick={() => setMode('link')}>
