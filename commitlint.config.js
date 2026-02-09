@@ -17,6 +17,7 @@ module.exports = {
         'build', // 빌드 시스템 또는 외부 의존성 변경
         'revert', // 이전 커밋 되돌리기
         'core', // 핵심 기능 관련 변경사항
+        'design', // ui/ux 디자인
       ],
     ],
     'type-case': [2, 'always', 'lower-case'],

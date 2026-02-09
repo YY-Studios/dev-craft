@@ -21,7 +21,7 @@ export const RepositorySelect = ({ selectOrg, setSelectRepo }: RepositorySelectP
                 id={repo.name}
                 name="repositories"
                 value={repo.name}
-                className="w-4 h-4 accent-gray-900 cursor-pointer"
+                className="w-4 h-4 accent-gray-800 cursor-pointer"
                 onChange={() => {
                   setSelectRepo(repo.name);
                 }}

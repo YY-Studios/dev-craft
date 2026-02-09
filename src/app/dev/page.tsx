@@ -45,22 +45,12 @@ export default function DevPage() {
     <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
       {/* 토글 */}
       <div className="flex gap-2">
-        <button
-          onClick={() => setMode('link')}
-          className={`rounded-md px-4 py-2 text-sm ${
-            mode === 'link' ? 'bg-black text-white' : 'border'
-          }`}
-        >
+        <Button variant="tab" isActive={mode === 'link'} onClick={() => setMode('link')}>
           PR 링크 입력
-        </button>
-        <button
-          onClick={() => setMode('select')}
-          className={`rounded-md px-4 py-2 text-sm ${
-            mode === 'select' ? 'bg-black text-white' : 'border'
-          }`}
-        >
+        </Button>
+        <Button variant="tab" isActive={mode === 'select'} onClick={() => setMode('select')}>
           PR 불러오기
-        </button>
+        </Button>
       </div>
       {/* PR 링크 복사 붙여넣기 */}
       {mode === 'link' && (

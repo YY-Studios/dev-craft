@@ -4,11 +4,11 @@ import chevronDown from '@/shared/assets/icons/Icon_chevron_down.svg';
 import chevronUp from '@/shared/assets/icons/Icon_chevron_up.svg';
 
 const triggerVariants = tv({
-  base: 'flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors cursor-pointer',
+  base: 'flex items-center gap-2 px-4 py-2 rounded-lg border transition-all cursor-pointer',
   variants: {
     isOpen: {
-      true: 'bg-[#1E2939] border-[#1E2939] text-white',
-      false: 'bg-white border-[#D1D5DC] text-[#1E2939]',
+      true: 'bg-white border-gray-400 text-gray-600 shadow-sm',
+      false: 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-400',
     },
   },
   defaultVariants: {
