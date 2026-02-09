@@ -1,6 +1,16 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
+}
+
 @theme {
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
   --color-primary: 107 142 35;
   --color-primary-hover: 124 165 40;
   --color-primary-active: 85 120 25;

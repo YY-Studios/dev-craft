@@ -1,19 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { Header } from '@/shared/ui/Header';
 import './globals.css';
 import { QueryProvider } from '@/shared/providers/QueryProvider';
 import { ModalProvider } from '@/shared/ui/modal/ModalProvider';
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -27,9 +17,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className="antialiased">
         <QueryProvider>
-          {/* todo: header 교체 */}
           <ModalProvider>
             <Header />
             <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
