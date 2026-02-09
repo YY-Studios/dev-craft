@@ -17,7 +17,8 @@ export default [
       'next-env.d.ts',
       'node_modules/**',
       'dist/**',
-      '*.config.js', // 설정 파일들 제외
+      '*.config.js', 
+      '*.config.ts',
       'commitlint.config.js',
     ],
   },

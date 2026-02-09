@@ -62,7 +62,6 @@ const base =
 
 const primary = 'bg-primary text-white hover:bg-primary-hover';
 const secondary = 'bg-secondary text-white border hover:bg-secondary-hover';
-
 const gray = 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50';
 
 export const Button = ({
@@ -75,8 +74,8 @@ export const Button = ({
   ...props
 }: ButtonProps) => {
   const tabStyles = isActive
-    ? 'bg-white text-gray-900 border-2 border-primary'
-    : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-gray-200';
+    ? 'bg-white text-gray-900 border-2 border-primary font-bold '
+    : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-gray-200 ';
 
   const variantStyles = {
     primary,
