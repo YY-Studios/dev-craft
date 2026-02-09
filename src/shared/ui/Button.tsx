@@ -32,13 +32,14 @@
 import Link, { type LinkProps } from 'next/link';
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary';
+type ButtonVariant = 'primary' | 'secondary' | 'gray' | 'tab';
 
 interface BaseButtonProps {
   children: ReactNode;
   disabled?: boolean;
   className?: string;
   variant?: ButtonVariant;
+  isActive?: boolean;
 }
 
 interface ButtonAsButton
@@ -55,23 +56,36 @@ interface ButtonAsLink extends BaseButtonProps, LinkProps {
 type ButtonProps = ButtonAsButton | ButtonAsLink;
 
 const base =
-  'inline-flex items-center justify-center rounded-md px-4 py-2 transition-colors cursor-pointer ' +
-  'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-400 focus-visible:ring-offset-2 ' +
+  'inline-flex items-center justify-center rounded-md px-4 py-2 transition-all cursor-pointer ' +
+  'focus-visible:outline-none focus-visible:opacity-90 ' +
   'disabled:pointer-events-none disabled:opacity-50';
 
-const primary = 'bg-gray-900 text-white hover:bg-gray-800';
+const primary = 'bg-primary text-white hover:bg-primary-hover';
+const secondary = 'bg-secondary text-white border hover:bg-secondary-hover';
 
-const secondary = 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50';
+const gray = 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50';
 
 export const Button = ({
   children,
   disabled = false,
   className,
   variant = 'primary',
+  isActive = false,
   as = 'button',
   ...props
 }: ButtonProps) => {
-  const styles = variant === 'primary' ? `${base} ${primary}` : `${base} ${secondary}`;
+  const tabStyles = isActive
+    ? 'bg-white text-gray-900 border-2 border-primary'
+    : 'bg-gray-100 text-gray-600 border-2 border-transparent hover:bg-gray-200';
+
+  const variantStyles = {
+    primary,
+    secondary,
+    gray,
+    tab: tabStyles,
+  };
+
+  const styles = `${base} ${variantStyles[variant]}`;
 
   if (as === 'link') {
     const { href, onClick, ...rest } = props as ButtonAsLink;
