@@ -32,7 +32,7 @@
 import Link, { type LinkProps } from 'next/link';
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'gray' | 'tab';
+type ButtonVariant = 'primary' | 'secondary' | 'gray' | 'tab' | 'github';
 
 interface BaseButtonProps {
   children: ReactNode;
@@ -63,6 +63,7 @@ const base =
 const primary = 'bg-primary text-white hover:bg-primary-hover';
 const secondary = 'bg-secondary text-white border hover:bg-secondary-hover';
 const gray = 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50';
+const github = 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm';
 
 export const Button = ({
   children,
@@ -82,6 +83,7 @@ export const Button = ({
     secondary,
     gray,
     tab: tabStyles,
+    github,
   };
 
   const styles = `${base} ${variantStyles[variant]}`;

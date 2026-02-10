@@ -8,8 +8,25 @@
   src: url('/fonts/PretendardVariable.woff2') format('woff2-variations');
 }
 
+@font-face {
+  font-family: 'Paperlogy';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Paperlogy-7Bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Paperlogy';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Paperlogy-8ExtraBold.ttf') format('truetype');
+}
+
 @theme {
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-logo: 'Paperlogy', 'Pretendard', sans-serif;
 
   --color-primary: 107 142 35;
   --color-primary-hover: 124 165 40;
@@ -28,7 +45,6 @@
   --color-fg: 237 237 237;
 }
 
-/* 여기 추가 */
 @layer utilities {
   .bg-primary {
     background-color: rgb(var(--color-primary));
@@ -52,6 +68,9 @@
   }
   .border-primary {
     border-color: rgb(var(--color-primary));
+  }
+  .font-logo {
+    font-family: var(--font-logo);
   }
 }
 
