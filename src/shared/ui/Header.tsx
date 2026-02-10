@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMe } from '@/features/auth/hooks/useMe';
-import logo from '@/shared/assets/icons/Icon_logo.svg';
+import logo from '@/shared/assets/icons/icon_logo.svg';
 import { Button } from './Button';
 
 export const Header = () => {
