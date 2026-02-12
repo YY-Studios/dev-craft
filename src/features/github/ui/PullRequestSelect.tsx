@@ -4,6 +4,7 @@ import { useRepoStore } from '@/shared/stores/useRepoStore';
 import { usePullRequests } from '../hooks/usePullRequests';
 import { PRListSkeleton } from '@/shared/ui/loding/PRListSkeleton';
 import NoData from '@/shared/ui/NoData';
+import { usePrStore } from '@/shared/stores/usePrStore';
 
 interface PullRequestSelectProps {
   searchQuery: string;
@@ -12,10 +13,7 @@ interface PullRequestSelectProps {
 export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
   const { selectOrg, selectRepo } = useRepoStore();
   const { data: pulls, isLoading, isFetched } = usePullRequests({ selectOrg, selectRepo });
-
-  if (!selectOrg || !selectRepo) {
-    return <p>레포지토리를 먼저 선택해주세요</p>;
-  }
+  const setSelectedPRUrl = usePrStore((state) => state.setSelectedPrUrl);
 
   if (isLoading) return <PRListSkeleton count={5} />;
 
@@ -29,12 +27,11 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
 
     return titleMatch || numberMatch;
   });
-
   return (
     <div>
-      <ul className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
-        {isFetched && filteredPRs && filteredPRs.length > 0 ? (
-          filteredPRs.map((pr) => (
+      {isFetched && filteredPRs && filteredPRs.length > 0 ? (
+        <ul className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
+          {filteredPRs.map((pr) => (
             <li key={pr.id} className="relative">
               <input
                 type="radio"
@@ -42,6 +39,7 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
                 id={`pr-${pr.number}`}
                 className="peer hidden"
                 value={pr.number}
+                onChange={() => setSelectedPRUrl(pr.html_url)}
               />
               <label
                 htmlFor={`pr-${pr.number}`}
@@ -73,19 +71,19 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
                 {/* 하단: 메타 정보 */}
                 <div className="flex items-center gap-2 text-xs text-gray-400">
                   <span className="truncate">
-                    {selectOrg.login} / {selectRepo}
+                    {selectOrg?.login} / {selectRepo}
                   </span>
                 </div>
               </label>
             </li>
-          ))
-        ) : (
-          <NoData
-            message={searchQuery ? '검색 결과가 없습니다' : '표시할 Pull Request가 없습니다'}
-            description={searchQuery ? '다른 검색어를 입력해보세요' : '새로운 PR을 생성해보세요'}
-          />
-        )}
-      </ul>
+          ))}
+        </ul>
+      ) : (
+        <NoData
+          message={searchQuery ? '검색 결과가 없습니다' : '표시할 Pull Request가 없습니다'}
+          description={searchQuery ? '다른 검색어를 입력해보세요' : '레포지토리를 선택해주세요'}
+        />
+      )}
     </div>
   );
 };

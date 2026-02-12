@@ -1,3 +1,5 @@
+'use client';
+
 import { useRepositories } from '@/features/github/hooks/useRepositories';
 import { selectedOrgType } from '@/widgets/pull-request-step/PullRequestStepWrap';
 import { useState } from 'react';
