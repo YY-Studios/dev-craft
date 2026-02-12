@@ -3,6 +3,7 @@ import { selectedOrgType } from '@/widgets/pull-request-step/PullRequestStepWrap
 import { useState } from 'react';
 import Pagination from '@/shared/ui/Pagination';
 import { RepoSkeleton } from '@/shared/ui/loding/RepoListSkeleton';
+import NoData from '@/shared/ui/NoData';
 interface RepositorySelectProps {
   selectOrg: selectedOrgType;
   setSelectRepo: (value: string) => void;
@@ -15,7 +16,8 @@ export const RepositorySelect = ({ selectOrg, setSelectRepo }: RepositorySelectP
     return <RepoSkeleton count={5} />;
   }
 
-  if (!repos) return null;
+  if (!repos)
+    return <NoData message="데이터를 불러올 수 없습니다" description="잠시 후 다시 시도해주세요" />;
 
   return (
     <div>
