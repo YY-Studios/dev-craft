@@ -31,7 +31,7 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
 
   return (
     <div>
-      <ul className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+      <ul className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
         {isFetched && filteredPRs && filteredPRs.length > 0 ? (
           filteredPRs.map((pr) => (
             <li key={pr.id} className="relative">
