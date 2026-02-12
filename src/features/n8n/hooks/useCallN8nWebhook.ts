@@ -12,7 +12,7 @@ export interface GeminiResponse {
   index: number;
 }
 
-export const useCallN8nWebbhook = () => {
+export const useCallN8nWebhook = () => {
   return useMutation({
     mutationFn: async (prUrl: string) => {
       //파싱
