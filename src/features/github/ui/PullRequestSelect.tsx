@@ -3,6 +3,7 @@
 import { useRepoStore } from '@/shared/stores/useRepoStore';
 import { usePullRequests } from '../hooks/usePullRequests';
 import { PRListSkeleton } from '@/shared/ui/loding/PRListSkeleton';
+import NoData from '@/shared/ui/NoData';
 
 interface PullRequestSelectProps {
   searchQuery: string;
@@ -79,11 +80,10 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
             </li>
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-gray-100 rounded-xl">
-            <p className="text-gray-400 text-sm">
-              {searchQuery ? '검색 결과가 없습니다' : '표시할 Pull Request가 없습니다'}
-            </p>
-          </div>
+          <NoData
+            message={searchQuery ? '검색 결과가 없습니다' : '표시할 Pull Request가 없습니다'}
+            description={searchQuery ? '다른 검색어를 입력해보세요' : '새로운 PR을 생성해보세요'}
+          />
         )}
       </ul>
     </div>
