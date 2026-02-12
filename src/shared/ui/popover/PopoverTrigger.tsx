@@ -4,7 +4,7 @@ import chevronDown from '@/shared/assets/icons/Icon_chevron_down.svg';
 import chevronUp from '@/shared/assets/icons/Icon_chevron_up.svg';
 
 const triggerVariants = tv({
-  base: 'flex items-center gap-2 px-4 py-2 rounded-lg border transition-all cursor-pointer',
+  base: 'flex items-center justify-between gap-2 px-4 py-2 rounded-lg border transition-all cursor-pointer w-full',
   variants: {
     isOpen: {
       true: 'bg-white border-gray-400 text-gray-600 shadow-sm',

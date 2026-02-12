@@ -10,6 +10,7 @@ export const Header = () => {
   const { data: user } = useMe();
   const handleLogout = async () => {
     await fetch('/api/logout', { method: 'POST' });
+    localStorage.clear();
     window.location.href = '/';
   };
   return (

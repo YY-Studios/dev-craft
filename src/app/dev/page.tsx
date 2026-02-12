@@ -42,7 +42,7 @@ export default function DevPage() {
   if (!isMounted) return null;
   console.log(copyData);
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10 space-y-10">
+    <div className=" space-y-10">
       {/* 토글 */}
       <h2>로딩 애니메이션</h2>
       <LoadingAnimation />

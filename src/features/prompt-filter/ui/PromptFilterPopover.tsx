@@ -9,14 +9,16 @@ interface FilterPopoverProps {
   options: readonly { key: PromptFilterKey; label: string }[];
   isChecked: (key: PromptFilterKey) => boolean;
   onToggle: (key: PromptFilterKey) => void;
+  align?: 'start' | 'center' | 'end'; // align 추가
 }
 
-export function FilterPopover({ label, options, isChecked, onToggle }: FilterPopoverProps) {
+export function FilterPopover({ label, options, isChecked, onToggle, align }: FilterPopoverProps) {
   return (
     <Popover>
       <PopoverTrigger>{label}</PopoverTrigger>
-      <PopoverContent>
-        <div className="grid grid-cols-2 gap-2 p-4">
+      {/* PopoverContent에 계산된 align 전달 */}
+      <PopoverContent align={align}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-4">
           {options.map(({ key, label }) => (
             <Checkbox
               key={key}
