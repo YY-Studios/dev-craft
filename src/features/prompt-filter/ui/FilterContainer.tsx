@@ -1,6 +1,6 @@
 'use client';
 
-import { FILTERS } from '../constants/test';
+import { FILTERS } from '../constants/options';
 import { usePromptFilter } from '../hooks/usePromptFilter';
 import type { PromptFilterCategory } from '../types';
 import { FilterPopover } from './PromptFilterPopover';

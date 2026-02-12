@@ -1,5 +1,6 @@
 import { usePopover } from './PopoverContext';
 import { tv } from 'tailwind-variants';
+import Image from 'next/image';
 import chevronDown from '@/shared/assets/icons/Icon_chevron_down.svg';
 import chevronUp from '@/shared/assets/icons/Icon_chevron_up.svg';
 
@@ -32,7 +33,7 @@ export function PopoverTrigger({ children, className }: PopoverTriggerProps) {
       className={triggerVariants({ isOpen, className })}
     >
       {children}
-      <img src={(isOpen ? chevronUp : chevronDown).src} className="w-4 h-4" alt="" aria-hidden />
+      <Image src={isOpen ? chevronUp : chevronDown} className="w-4 h-4" alt="" aria-hidden />
     </button>
   );
 }

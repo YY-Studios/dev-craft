@@ -28,9 +28,9 @@
   --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-logo: 'Paperlogy', 'Pretendard', sans-serif;
 
-  --color-primary: rgb(107 142 35);
-  --color-primary-hover: rgb(124 165 40);
-  --color-primary-active: rgb(85 120 25);
+  --color-primary: rgb(8 145 178);
+  --color-primary-hover: rgb(6 182 212);
+  --color-primary-active: rgb(21 94 117);
 
   --color-secondary: rgb(235 225 210);
   --color-secondary-hover: rgb(225 210 190);
