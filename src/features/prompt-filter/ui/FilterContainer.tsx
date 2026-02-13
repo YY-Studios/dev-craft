@@ -1,12 +1,12 @@
 'use client';
 
 import { FILTERS } from '../constants/options';
-import { usePromptFilter } from '../hooks/usePromptFilter';
 import type { PromptFilterCategory } from '../types';
 import { FilterPopover } from './PromptFilterPopover';
+import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
 
 export function FilterContainer() {
-  const { toggleFilter, isChecked } = usePromptFilter();
+  const { toggleFilter, isChecked } = usePromptFilterStore();
 
   // 필터 카테고리 배열 추출
   const categories = Object.keys(FILTERS) as PromptFilterCategory[];
