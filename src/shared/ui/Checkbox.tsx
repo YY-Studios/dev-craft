@@ -11,7 +11,7 @@ const checkboxVariants = tv({
   variants: {
     checked: {
       true: {
-        box: 'bg-[#1E2939] border-[#1E2939]',
+        box: 'bg-primary border-primary',
       },
       false: {
         box: 'bg-white border-[#D1D5DC]',
@@ -25,7 +25,7 @@ const checkboxVariants = tv({
 
 interface CheckboxProps {
   checked: boolean;
-  // eslint-disable-next-line no-unused-vars
+
   onChange: (checked: boolean) => void;
   label?: string;
   className?: string;

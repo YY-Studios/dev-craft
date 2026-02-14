@@ -13,13 +13,25 @@ interface PomptFilterStore {
 
 export const usePromptFilterStore = create<PomptFilterStore>()(
   devtools((set, get) => ({
-    selectedFilters: {},
+    selectedFilters: {
+      documentType: ['blog'],
+    },
     isChecked: (category, key) => {
       return get().selectedFilters[category]?.includes(key) ?? false;
     },
     toggleFilter: (category, key) =>
       set((state) => {
+        const isSingleSelect = category === 'documentType';
         const currentList = state.selectedFilters[category] || [];
+        if (isSingleSelect) {
+          return {
+            selectedFilters: {
+              ...state.selectedFilters,
+              [category]: [key],
+            },
+          };
+        }
+
         const isExist = currentList.includes(key);
         return {
           selectedFilters: {

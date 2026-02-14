@@ -16,7 +16,7 @@ export function FilterContainer() {
     <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:flex">
       {categories.map((category, index) => {
         const align = index >= totalCount / 2 ? 'end' : 'start';
-
+        const isSingleSelect = category === 'documentType';
         return (
           <FilterPopover
             key={category}
@@ -25,6 +25,7 @@ export function FilterContainer() {
             isChecked={(key) => isChecked(category, key)}
             onToggle={(key) => toggleFilter(category, key)}
             align={align} // 계산된 align 전달
+            isSingleSelect={isSingleSelect}
           />
         );
       })}

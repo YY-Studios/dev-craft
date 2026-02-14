@@ -3,6 +3,7 @@
 import { Popover, PopoverTrigger, PopoverContent, PopoverClose } from '@/shared/ui/popover';
 import { Checkbox } from '@/shared/ui/Checkbox';
 import type { PromptFilterKey } from '../types';
+import { Radio } from '@/shared/ui/Radio';
 
 interface FilterPopoverProps {
   label: string;
@@ -10,26 +11,45 @@ interface FilterPopoverProps {
   isChecked: (key: PromptFilterKey) => boolean;
   onToggle: (key: PromptFilterKey) => void;
   align?: 'start' | 'center' | 'end'; // align 추가
+  isSingleSelect: boolean;
 }
 
-export function FilterPopover({ label, options, isChecked, onToggle, align }: FilterPopoverProps) {
+export function FilterPopover({
+  label,
+  options,
+  isChecked,
+  onToggle,
+  align,
+  isSingleSelect,
+}: FilterPopoverProps) {
   return (
     <Popover>
       <PopoverTrigger>{label}</PopoverTrigger>
       {/* PopoverContent에 계산된 align 전달 */}
       <PopoverContent align={align}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-4">
-          {options.map(({ key, label }) => (
-            <Checkbox
-              key={key}
-              label={label}
-              checked={isChecked(key)}
-              onChange={() => onToggle(key)}
-            />
-          ))}
+          {options.map(({ key, label }) =>
+            isSingleSelect ? (
+              <Radio
+                name="documentType"
+                value={key}
+                key={key}
+                label={label}
+                checked={isChecked(key)}
+                onChange={() => onToggle(key)}
+              />
+            ) : (
+              <Checkbox
+                key={key}
+                label={label}
+                checked={isChecked(key)}
+                onChange={() => onToggle(key)}
+              />
+            ),
+          )}
         </div>
         <PopoverClose className="w-full bg-[#1E2939] text-white py-3 rounded-b-lg">
-          Done
+          닫기
         </PopoverClose>
       </PopoverContent>
     </Popover>
