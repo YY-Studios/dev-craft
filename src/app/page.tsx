@@ -1,21 +1,17 @@
-import { FilterContainer } from './../features/prompt-filter/ui/FilterContainer';
 import { LoadingAnimation } from '@/shared/ui/loding/LoadingAnimation';
 import { PullRequestWrap } from './../features/github/ui/PullRequestWrap';
+import { FilterSelectedListWrap } from '@/features/filter-selected-list/FilterSeletedListWrap';
 import { DocumentWrap } from '@/features/document/ui/DocumentWrap';
 import Accordion from '@/shared/ui/accordion';
 
 export default function MainPage() {
   return (
     <div className=" space-y-10">
-      {/* 토글 */}
       <h2>로딩 애니메이션</h2>
       <LoadingAnimation />
       <PullRequestWrap />
       {/* 문서 생성 옵션 */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">문서 생성 옵션</h2>
-        <FilterContainer />
-      </section>
+      <FilterSelectedListWrap />
       {/* 문서 생성하기 */}
       {/* PR 변경 영향도 */}
       <Accordion>

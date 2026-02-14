@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import type { PromptFilterCategory, PromptFilterKey, PromptFilterState } from '../types';
-import { FILTERS } from '../constants/test';
+import { FILTERS } from '../constants/options';
 
 export function usePromptFilter() {
   const [filters, setFilters] = useState<PromptFilterState>(() => {
