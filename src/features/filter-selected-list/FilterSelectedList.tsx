@@ -25,6 +25,7 @@ export const FilterSelectedList = () => {
           key={item.key}
           label={item.label}
           removeFilter={() => removeFilter(item.category, item.key)}
+          isSingle={item.category === 'documentType'}
         />
       ))}
     </div>

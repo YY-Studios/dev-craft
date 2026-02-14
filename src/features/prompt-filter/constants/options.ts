@@ -3,8 +3,8 @@ export const FILTERS = {
   documentType: {
     label: '문서 종류',
     options: [
-      { key: 'readme', label: '리드미' },
       { key: 'blog', label: '블로그' },
+      { key: 'readme', label: '리드미' },
     ],
   },
 

@@ -5,6 +5,7 @@ import Button from '@/shared/ui/Button';
 import { useCallN8nWebhook } from '@/features/n8n/hooks/useCallN8nWebhook';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
 import { modal } from '@/shared/ui/modal/modalApi';
+import Input from '@/shared/ui/input/Input';
 
 export const PullRequestLink = () => {
   const [inputValue, setInputValue] = useState<string>('');
@@ -29,10 +30,9 @@ export const PullRequestLink = () => {
   return (
     <section className="space-y-3">
       <h2 className="text-lg font-semibold">PR 링크 입력</h2>
-      <input
+      <Input
         type="text"
         placeholder="GitHub PR 링크를 붙여넣으세요"
-        className="w-full rounded-md border px-3 py-2 text-sm"
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
       />
