@@ -1,14 +1,20 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { PromptFilterKey, PromptFilterCategory } from '@/features/prompt-filter/types';
+import { FILTERS } from '@/features/prompt-filter/constants/options';
 interface PomptFilterStore {
   // 필터 상태: { documentType: ['readme'], purpose: ['overview', 'usage'].filter(item => item !== key) }
   selectedFilters: Partial<Record<PromptFilterCategory, PromptFilterKey[]>>;
-
+  setSelectFilters: (data: Partial<Record<PromptFilterCategory, PromptFilterKey[]>>) => void;
   isChecked: (category: PromptFilterCategory, key: PromptFilterKey) => boolean;
   toggleFilter: (category: PromptFilterCategory, key: PromptFilterKey) => void;
   removeFilter: (category: PromptFilterCategory, key: PromptFilterKey) => void;
   resetFilters: () => void;
+  getFlatFilters: () => {
+    category: PromptFilterCategory;
+    key: PromptFilterKey;
+    label: string | undefined;
+  }[];
 }
 
 export const usePromptFilterStore = create<PomptFilterStore>()(
@@ -16,6 +22,15 @@ export const usePromptFilterStore = create<PomptFilterStore>()(
     selectedFilters: {
       documentType: ['blog'],
     },
+    setSelectFilters: (data) =>
+      set((state) => {
+        if (JSON.stringify(state.selectedFilters) === JSON.stringify(data)) {
+          return state;
+        }
+        return {
+          selectedFilters: data,
+        };
+      }),
     isChecked: (category, key) => {
       return get().selectedFilters[category]?.includes(key) ?? false;
     },
@@ -52,5 +67,23 @@ export const usePromptFilterStore = create<PomptFilterStore>()(
         };
       }),
     resetFilters: () => set({ selectedFilters: {} }),
+    getFlatFilters: () => {
+      const filters = get().selectedFilters;
+
+      const allFilters = Object.entries(filters).flatMap(([category, keys]) =>
+        keys.map((key) => ({
+          category: category as PromptFilterCategory,
+          key: key as PromptFilterKey,
+          label: FILTERS[category as PromptFilterCategory].options.find((opt) => opt.key === key)
+            ?.label,
+        })),
+      );
+
+      // documentType 따로 분리
+      const docTypeFilters = allFilters.filter((f) => f.category === 'documentType');
+      const otherFilters = allFilters.filter((f) => f.category !== 'documentType');
+
+      return [...docTypeFilters, ...otherFilters];
+    },
   })),
 );

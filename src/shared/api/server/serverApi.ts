@@ -40,7 +40,11 @@ export async function serverApi<T>(path: string, config: RequestConfig<T> = {}):
   }
 
   // No Content 응답 대응
-  if (res.status === 204) return null as T;
+  if (res.status === 204 || res.status === 201) {
+    const text = await res.text();
+    if (!text) return null as T;
+    return JSON.parse(text) as T;
+  }
 
   const data = await res.json();
 
