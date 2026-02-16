@@ -61,7 +61,7 @@ const base =
   'disabled:pointer-events-none disabled:opacity-50';
 
 const primary = 'bg-primary text-white hover:bg-primary-hover';
-const secondary = 'bg-secondary text-white border hover:bg-secondary-hover';
+const secondary = 'bg-slate-200 text-slate-900 hover:bg-slate-300 transition-colors';
 const gray = 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50';
 const github = 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm';
 
