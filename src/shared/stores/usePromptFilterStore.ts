@@ -5,7 +5,8 @@ import { FILTERS } from '@/features/prompt-filter/constants/options';
 interface PomptFilterStore {
   // 필터 상태: { documentType: ['readme'], purpose: ['overview', 'usage'].filter(item => item !== key) }
   selectedFilters: Partial<Record<PromptFilterCategory, PromptFilterKey[]>>;
-  setSelectFilters: (data: Partial<Record<PromptFilterCategory, PromptFilterKey[]>>) => void;
+  setSelectedFilters: (data: Partial<Record<PromptFilterCategory, PromptFilterKey[]>>) => void;
+  removeSelectedFilter: (data: Partial<Record<PromptFilterCategory, PromptFilterKey[]>>) => void;
   isChecked: (category: PromptFilterCategory, key: PromptFilterKey) => boolean;
   toggleFilter: (category: PromptFilterCategory, key: PromptFilterKey) => void;
   removeFilter: (category: PromptFilterCategory, key: PromptFilterKey) => void;
@@ -22,7 +23,7 @@ export const usePromptFilterStore = create<PomptFilterStore>()(
     selectedFilters: {
       documentType: ['blog'],
     },
-    setSelectFilters: (data) =>
+    setSelectedFilters: (data) =>
       set((state) => {
         if (JSON.stringify(state.selectedFilters) === JSON.stringify(data)) {
           return state;
