@@ -16,11 +16,8 @@ export async function GET() {
     console.log(user_id);
     const data = await serverApi(`/saved_filters?user_id=eq.${user_id}&select=id,name,filters`);
     return NextResponse.json(data);
-  } catch (error) {
-    console.log('에러', error);
-    return NextResponse.json(
-      { message: '데이터 불러오는데 실패했습니다.Accordion' },
-      { status: 401 },
-    );
+  } catch (e) {
+    console.log('에러', e);
+    return NextResponse.json({ message: '데이터 불러오기에 실패했습니다.' }, { status: 401 });
   }
 }
