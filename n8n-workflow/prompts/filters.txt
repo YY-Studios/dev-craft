@@ -1,0 +1,9 @@
+pr내용: {{ $json.allFilesDiff }}
+문서 종류: {{ $('Webhook').item.json.body.filters.documentType }}
+글 목적: {{ $('Webhook').item.json.body.filters.purpose }}
+설명 수준: {{ $('Webhook').item.json.body.filters.explanationDepth }}
+독자 타겟: {{ $('Webhook').item.json.body.filters.targetLevel }}
+말투: {{ $('Webhook').item.json.body.filters.toneStyle }}
+글 구조: {{ $('Webhook').item.json.body.filters.contentStructure }}
+스타일 옵션: {{ $('Webhook').item.json.body.filters.styleOptions }}
+PR 기반 옵션: {{ $('Webhook').item.json.body.filters.prOptions }}

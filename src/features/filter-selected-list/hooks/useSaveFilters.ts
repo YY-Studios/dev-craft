@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { clientApi } from '@/shared/api/client/clientApi';
 import { PromptFilterKey, PromptFilterCategory } from '@/features/prompt-filter/types';
+import { useMe } from '@/features/auth/hooks/useMe';
 
 interface PresetsType {
   id: number;
@@ -14,5 +15,6 @@ export const useSaveFilters = () => {
     queryFn: async () => {
       return clientApi<PresetsType[]>('presets');
     },
+    enabled: !useMe,
   });
 };

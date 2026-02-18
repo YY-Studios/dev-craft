@@ -13,7 +13,6 @@ export async function GET() {
 
   try {
     const { user_id } = verifyAccessToken(accessToken);
-    console.log(user_id);
     const data = await serverApi(`/saved_filters?user_id=eq.${user_id}&select=id,name,filters`);
     return NextResponse.json(data);
   } catch (e) {

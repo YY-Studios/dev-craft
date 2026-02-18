@@ -13,6 +13,7 @@ import { PullRequsetSearch } from './PullRequsetSearch';
 import { useCallN8nWebhook } from '@/features/n8n/hooks/useCallN8nWebhook';
 import { usePrStore } from '@/shared/stores/usePrStore';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
+import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
 
 export const PullRequestFetch = () => {
   const { open, close } = useModal();
@@ -20,6 +21,7 @@ export const PullRequestFetch = () => {
   const { mutate } = useCallN8nWebhook();
   const { selectedPrUrl } = usePrStore();
   const { setDocument, setPending, setError, isPending } = usedocumentStore();
+  const { selectedFilters } = usePromptFilterStore();
 
   const handleGenerateFromSelect = () => {
     if (!selectedPrUrl) {
@@ -27,14 +29,17 @@ export const PullRequestFetch = () => {
       return;
     }
     setPending(true);
-    mutate(selectedPrUrl, {
-      onSuccess: (data) => {
-        setDocument(data?.content.parts[0].text);
+    mutate(
+      { prUrl: selectedPrUrl, filters: selectedFilters },
+      {
+        onSuccess: (data) => {
+          setDocument(data?.content.parts[0].text);
+        },
+        onError: () => {
+          setError(true);
+        },
       },
-      onError: () => {
-        setError(true);
-      },
-    });
+    );
   };
 
   return (

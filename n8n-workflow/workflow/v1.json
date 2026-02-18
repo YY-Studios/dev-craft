@@ -1,0 +1,231 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3928e558-e92d-4201-9b6b-a9566076e614",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [160, -288],
+      "id": "46ffb6ba-4893-4f4c-b1ff-de6913f64787",
+      "name": "Webhook",
+      "webhookId": "3928e558-e92d-4201-9b6b-a9566076e613"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [1200, -336],
+      "id": "58791bac-68ea-456e-863c-a24ebffe7ac8",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1) Webhook에서 받은 입력(필터/PR 링크 등)\nconst webhookBody = $('Webhook').first().json.body;\n\n// 2) pr_req(현재 Code 노드로 들어오는 items)에서 patch 있는 파일만 모아서 diff 합치기\nconst filesWithPatch = items.filter((item) => item.json.patch);\n\nconst combinedDiff = filesWithPatch\n  .map((item) => {\n    return `### File: ${item.json.filename} (Status: ${item.json.status})\\nDiff:\\n${item.json.patch.slice(0, 1500)}`;\n  })\n  .join('\\n\\n---\\n\\n');\n\n// 3) 다른 노드 응답(댓글/라인댓글) 가져오기\nconst normalizeList = (nodeName) => {\n  const arr = $(nodeName).all().map((i) => i.json);\n  // HTTP Request가 \"한 item 안에 배열\"로 들어오는 경우 대응\n  if (arr.length === 1 && Array.isArray(arr[0])) return arr[0];\n  return arr;\n};\n\nconst issueComments = normalizeList('comment req');       // /issues/{n}/comments\nconst lineReviewComments = normalizeList('line review req'); // /pulls/{n}/comments\n\n// 4) 토큰 아끼려고 body 정리(코드래빗 같은 긴 주석 제거용)\nconst cleanText = (s = '') =>\n  String(s)\n    .replace(/<!--[\\s\\S]*?-->/g, '') // HTML 주석 제거\n    .replace(/<[^>]*>/g, '')         // HTML 태그 제거\n    .replace(/\\n{3,}/g, '\\n\\n')\n    .trim();\n\n// 5) 문자열로 합치기\nconst issueText =\n  issueComments.length === 0\n    ? '없음'\n    : issueComments\n        .map((c, idx) => {\n          const author = c.user?.login ?? 'unknown';\n          const at = c.created_at ?? '';\n          const body = cleanText(c.body).slice(0, 1200);\n          return `[#${idx + 1}] ${author} ${at}\\n${body}`;\n        })\n        .join('\\n\\n---\\n\\n');\n\nconst lineText =\n  lineReviewComments.length === 0\n    ? '없음'\n    : lineReviewComments\n        .map((c, idx) => {\n          const author = c.user?.login ?? 'unknown';\n          const at = c.created_at ?? '';\n          const pos = c.path\n            ? `${c.path}${c.line ? `:${c.line}` : ''}`\n            : '';\n          const body = cleanText(c.body).slice(0, 600);\n          return `[#${idx + 1}] ${author} ${at}\\n${pos}\\n${body}`;\n        })\n        .join('\\n\\n---\\n\\n');\n\nconst fileChangeComment = `## PR 일반 댓글(Conversation)\\n${issueText}\\n\\n## PR 라인 댓글(Files changed)\\n${lineText}`;\n\n// 6) 최종 리턴(LLM 노드에서 $json.allFilesDiff / $json.fileChangeComment로 사용)\nreturn [\n  {\n    json: {\n      allFilesDiff: combinedDiff,\n      totalFiles: filesWithPatch.length,\n\n      // 원본 입력을 그대로 넘김(필터/PR 링크 등)\n      conversation: webhookBody,\n\n      // 댓글/리뷰\n      fileChangeComment,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [672, -352],
+      "id": "032c0f45-4e5b-449d-b24e-1a6a50aa667e",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.body.owner }}/{{ $json.body.repo }}/pulls/{{ $json.body.number }}/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [448, -416],
+      "id": "f9db14a5-4902-4c36-8a62-9e06d92c3014",
+      "name": "pr_req",
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=너는 “PR 기반 문서/블로그 생성기”다.\n입력으로 주어진 {{ $json.allFilesDiff }}와 {{ $json.conversation.filters }} 값(키)을 근거로, 실제로 쓸 수 있는 Markdown 문서 1편을 만든다.\n\n절대 규칙\n- 추측 금지: PR diff / 입력에 없는 파일·기능·동작을 만들어내지 않는다.\n- 확인 불가한 내용은 “추가로 확인할 점” 섹션에 질문으로만 남긴다.\n- 출력은 Markdown 한 편만 (메타 코멘트, 안내문, 사족 금지)\n- {STACK}이 없거나 비어 있으면 특정 프레임워크/라이브러리 이름을 단정해서 끼워 넣지 않는다.\n\n입력(그대로 사용)\npr내용: {{ $json.allFilesDiff }}\n문서 종류: {{ $json.conversation.filters.documentType }}\n글 목적: {{ $json.conversation.filters.purpose }}\n설명 수준: {{ $json.conversation.filters.explanationDepth }}\n독자 타겟: {{ $json.conversation.filters.targetLevel }}\n말투: {{ $json.conversation.filters.toneStyle }}\n글 구조: {{ $json.conversation.filters.contentStructure }}\n스타일 옵션: {{ $json.conversation.filters.styleOptions }}\nPR 기반 옵션: {{ $json.conversation.filters.prOptions }}\n\n필터 해석 규칙(중요)\n- 위 필터 값은 문자열 또는 배열일 수 있다.\n  - 배열이면 “선택된 키 목록”으로 해석한다.\n  - 비어 있거나 null이면 “선택 없음”으로 간주하고 기본값으로 작성한다.\n\n1) 문서 종류(documentType)\n- blog: 사람 냄새 나는 개발 블로그 톤. “내가 겪은 흐름(오해→막힘→해결)”을 기본 뼈대로 쓴다.\n- readme: 실사용자 문서 톤. 간결하고 구조적으로, 실행 가능한 정보(설치/사용/구성)를 우선한다.\n\n2) 글 목적(purpose) — 1개 선택\n- overview: 전체 개요/핵심 기능/목표/대상\n- setupGuide: 설치/환경변수/실행 순서/주의사항\n- usage: 실제 사용 방법/예시/시나리오\n- architecture: 폴더/모듈/레이어/데이터 흐름\n- techDecision: 기술 선택 이유/대안 비교/트레이드오프\n- concept: 핵심 개념 정의 + 왜 필요한지 + PR에서 어떻게 쓰였는지\n- troubleshooting: 문제→원인→해결, 재현/증상/검증 과정을 강조\n- tutorial: 따라하기(단계) 중심, 단계별 결과가 보이게\n- prReview: 변경점 분석/영향 범위/핵심 diff 해석 중심\n- retrospective: 배운 점/아쉬운 점/다음 액션 중심 (과장 금지)\n\n3) 설명 수준(explanationDepth) — 1~2개 선택\n- lineByLine: 중요한 변경 구간을 골라 라인 단위로 짧게 해설(전체 다 하지 말고 상위 3~5개 변경만)\n- keyCode: 핵심 코드/핵심 diff만 발췌해서 설명\n- flowBased: 파일 나열 대신 “흐름(요청→처리→저장/응답)” 중심으로 설명\n- beforeAfter: 가능하면 diff의 삭제/추가를 이용해 Before/After 비교 섹션을 만든다\n\n4) 독자 타겟(targetLevel) — 1개 선택\n- beginner: 용어 정의 먼저, 왜 필요한지부터 설명\n- intermediate: 배경 설명 최소, 실무 포인트/함정/선택 이유 강조\n- advanced: 트레이드오프/확장성/경계 조건/리스크 중심\n\n5) 말투(toneStyle)\n- plain: 군더더기 없이 짧게\n- natural: 자연스러운 문장, 너무 교과서 톤 금지\n- senior: 선배가 맥락 잡아주듯(불필요한 훈계 금지)\n- lecture: 강의처럼 목차/정의/정리 구조를 선명하게\n\n6) 글 구조(contentStructure)\n- summaryFirst: 맨 위에 TL;DR/요약 먼저\n- conclusionFirst: 맨 위에 결론(무엇이 바뀌었고 왜 중요한지) 먼저\n- problemCauseSolution: 전체 흐름을 문제→원인→해결로 고정\n- stepByStep: 단계 1,2,3… 형태로 진행\n- onePointPerParagraph: 한 문단에 한 포인트만(문단 3~5문장)\n\n7) 스타일 옵션(styleOptions)\n- noEmoji: 이모지 0개\n- minEmoji: 이모지 최대 2개\n- table: 최소 1개 표 포함(예: 변경 요약 표, 영향 범위 표, 설정 표)\n- codeHeavy: 코드 블록 많이(3개 이상 권장, 단 억지 금지)\n- codeLight: 코드 블록 최소(1개 이하 권장, 필요할 때만)\n\n충돌 처리\n- noEmoji가 있으면 minEmoji 무시(이모지 0)\n- codeHeavy와 codeLight가 동시에 있으면 codeHeavy 우선\n- summaryFirst와 conclusionFirst가 동시에 있으면 conclusionFirst 우선\n\n8) PR 기반 옵션(prOptions) — 1~3개 선택\n선택된 키는 반드시 “별도 섹션 제목”으로 포함한다.\n- changeSummary: 변경 요약(무엇이 바뀌었는지 5~10줄)\n- majorChanges: 주요 수정 사항(핵심 파일/핵심 로직 3~7개)\n- risks: 리스크 및 주의사항(부작용/엣지케이스/롤백 포인트)\n- learnings: PR에서 배운 점(사실 기반)\n- mistakes: 실수 정리(왜 실수했는지 + 예방책)\n- reviewFeedback: 리뷰 피드백 반영 과정(입력에 근거 있을 때만)\n- ifRedo: 다시 한다면 이렇게(개선안/대안/다음 액션)\n\n문서 출력 규칙(문서 종류에 따라 다름)\n\nA) documentType = blog 일 때\n- 제목 1개\n- 기본 섹션(필수)\n  1. (summaryFirst 또는 conclusionFirst 적용)\n  2. 문제의식/계기 (PR 맥락 포함)\n  3. 내가 처음에 생각한 것 / 막힌 지점 (가능하면 diff 근거로)\n  4. 핵심 개념/원리 (targetLevel 맞춰 깊이 조절)\n  5. 코드/변경 해설 (explanationDepth 규칙 적용)\n  6. 결과/검증/영향 범위 (추측 금지)\n  7. 추가로 확인할 점 (모르면 질문으로만)\n- prOptions로 선택된 섹션은 위 흐름에 자연스럽게 끼워 넣되, “섹션 제목은 반드시 포함”한다.\n- contentStructure가 problemCauseSolution이면 전체 흐름을 그 구조로 재배치한다.\n- 스타일: 금지 표현(“~해보겠습니다/간단히 알아보겠습니다/혁신적/완벽”) 쓰지 말기\n\nB) documentType = readme 일 때\n- 제목 1개\n- 목적(purpose)에 맞는 핵심 섹션을 우선 구성하고, 나머지는 최소화한다.\n  - overview: 프로젝트 개요 / 주요 기능 / 빠른 시작\n  - setupGuide: 요구 사항 / 설치 / 환경변수 / 실행\n  - usage: 사용 방법 / 예시 / 옵션\n  - architecture: 구조 / 디렉토리 / 데이터 흐름\n  - techDecision: 기술 스택 / 선택 이유 / 트레이드오프\n- prOptions(changeSummary/majorChanges/risks 등) 선택된 항목은 별도 섹션으로 반드시 포함한다.\n- table 옵션이 있으면, 환경변수/설정/변경 요약 중 하나는 표로 만든다.\n- codeHeavy면 설치/실행/사용 예시 코드(커맨드/설정) 블록을 충분히 넣는다.\n- codeLight면 최소한의 실행 예시 1개만 유지한다.\n\n작성 시 PR diff 활용 규칙\n- 파일 경로, 추가/삭제된 핵심 로직, 변경된 API/옵션/흐름을 “근거 기반”으로 요약한다.\n- lineByLine을 선택했어도 모든 라인을 해설하지 말고, 영향이 큰 변경 3~5개만 고른다.\n- beforeAfter를 선택했는데 Before 코드가 확실하지 않으면 “diff에 나타난 범위 내에서만” 비교한다.\n\n이제 위 입력을 바탕으로 Markdown 문서 1편을 출력해라.\n(출력은 문서 본문만, 추가 안내/설명 금지)\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [880, -336],
+      "id": "c9f1e519-027a-44e5-9be1-b6bb203213e2",
+      "name": "gpt01",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "b2FZMgP6ETLv6Vqz",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.body.owner }}/{{ $json.body.repo }}/issues/{{ $json.body.number }}/comments?per_page=100",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{}]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [464, -256],
+      "id": "cc44f676-2bc9-475e-b921-a96a6303b8b7",
+      "name": "comment req",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.body.owner }}/{{ $json.body.repo }}/pulls/{{ $json.body.number }}/comments?per_page=100\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{}]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [480, -64],
+      "id": "b58b1e92-ecb1-4898-9858-3a9100df6436",
+      "name": "line review req",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "pr_req",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "comment req",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "line review req",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "gpt01",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pr_req": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt01": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "comment req": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "line review req": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2c64b1be19a9c62516be8a45731169c0563007884fd8ed632116072f82f087d4"
+  }
+}
