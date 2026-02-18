@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { clientApi } from '@/shared/api/client/clientApi';
+import { PromptFilterCategory, PromptFilterKey } from '@/features/prompt-filter/types';
 
 export interface GeminiResponse {
   content: {
@@ -14,7 +15,13 @@ export interface GeminiResponse {
 
 export const useCallN8nWebhook = () => {
   return useMutation({
-    mutationFn: async (prUrl: string) => {
+    mutationFn: async ({
+      prUrl,
+      filters,
+    }: {
+      prUrl: string;
+      filters: Partial<Record<PromptFilterCategory, PromptFilterKey[]>>;
+    }) => {
       //파싱
       const regex = /github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)/;
       const match = prUrl.match(regex);
@@ -29,7 +36,7 @@ export const useCallN8nWebhook = () => {
 
       return await clientApi<GeminiResponse>('n8n/webhook', {
         method: 'POST',
-        body: { owner, repo, number },
+        body: { owner, repo, number, filters },
       });
     },
   });

@@ -7,8 +7,6 @@ export const FilterSelectedList = () => {
   const getFlatFilters = usePromptFilterStore((state) => state.getFlatFilters);
   const flatFilters = getFlatFilters();
 
-  console.log('flatFilters', flatFilters);
-  console.log('selectedFilters', selectedFilters);
   if (flatFilters.length === 0) return null;
 
   return (

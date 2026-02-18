@@ -6,25 +6,30 @@ import { useCallN8nWebhook } from '@/features/n8n/hooks/useCallN8nWebhook';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
 import { modal } from '@/shared/ui/modal/modalApi';
 import Input from '@/shared/ui/input/Input';
+import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
 
 export const PullRequestLink = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const { mutate } = useCallN8nWebhook();
   const { setDocument, setPending, setError, isPending } = usedocumentStore();
+  const { selectedFilters } = usePromptFilterStore();
 
   const HandleGenerateFormLink = () => {
     if (!inputValue) {
       modal.alert('pr 주소를 입력해주세요.');
     }
     setPending(true);
-    mutate(inputValue, {
-      onSuccess: (data) => {
-        setDocument(data?.content.parts[0].text);
+    mutate(
+      { prUrl: inputValue, filters: selectedFilters },
+      {
+        onSuccess: (data) => {
+          setDocument(data?.content.parts[0].text);
+        },
+        onError: () => {
+          setError(true);
+        },
       },
-      onError: () => {
-        setError(true);
-      },
-    });
+    );
   };
 
   return (

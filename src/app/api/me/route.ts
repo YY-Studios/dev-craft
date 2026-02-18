@@ -9,7 +9,7 @@ export async function GET() {
   const accessToken = cookieStore.get('access_token')?.value;
 
   if (!accessToken) {
-    return NextResponse.json({ message: '로그인이 필요합니다.' }, { status: 401 });
+    return NextResponse.json(null, { status: 200 });
   }
 
   try {

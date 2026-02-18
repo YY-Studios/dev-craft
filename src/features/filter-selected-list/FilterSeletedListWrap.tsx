@@ -12,7 +12,6 @@ export const FilterSelectedListWrap = () => {
   const { open, close } = useModal();
   const { data } = useSaveFilters();
 
-  console.log('data', data);
   const handleSaveFilter = () => {
     const id = open({
       component: (

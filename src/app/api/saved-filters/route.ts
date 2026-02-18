@@ -14,7 +14,6 @@ export async function POST(req: NextRequest) {
   try {
     const { user_id } = verifyAccessToken(accessToken);
     const { name, filters } = await req.json();
-    console.log(user_id, name, filters);
 
     await serverApi('/saved_filters', {
       method: 'POST',
