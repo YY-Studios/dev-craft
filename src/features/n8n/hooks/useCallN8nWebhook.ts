@@ -3,10 +3,9 @@ import { clientApi } from '@/shared/api/client/clientApi';
 import { PromptFilterCategory, PromptFilterKey } from '@/features/prompt-filter/types';
 
 export interface GeminiResponse {
+  html: string;
   content: {
-    parts: Array<{
-      text: string;
-    }>;
+    parts: Array<{ text: string }>;
     role: string;
   };
   finishReason: string;
