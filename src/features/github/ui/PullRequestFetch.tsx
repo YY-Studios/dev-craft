@@ -10,7 +10,7 @@ import Button from '@/shared/ui/Button';
 import { PullRequsetSelect } from './PullRequestSelect';
 import { PullRequestStepWrap } from '@/widgets/pull-request-step/PullRequestStepWrap';
 import { PullRequsetSearch } from './PullRequsetSearch';
-import { useCallN8nWebhook } from '@/features/n8n/hooks/useCallN8nWebhook';
+import { GeminiResponse, useCallN8nWebhook } from '@/features/n8n/hooks/useCallN8nWebhook';
 import { usePrStore } from '@/shared/stores/usePrStore';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
 import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
@@ -20,7 +20,7 @@ export const PullRequestFetch = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { mutate } = useCallN8nWebhook();
   const { selectedPrUrl } = usePrStore();
-  const { setDocument, setPending, setError, isPending } = usedocumentStore();
+  const { setDocument, setChartHtml, setPending, setError, isPending } = usedocumentStore();
   const { selectedFilters } = usePromptFilterStore();
 
   const handleGenerateFromSelect = () => {
@@ -32,8 +32,11 @@ export const PullRequestFetch = () => {
     mutate(
       { prUrl: selectedPrUrl, filters: selectedFilters },
       {
-        onSuccess: (data) => {
-          setDocument(data?.content.parts[0].text);
+        onSuccess: (data: GeminiResponse) => {
+          const text = data?.content?.parts?.[0]?.text ?? '';
+          const chartHtml = data?.html;
+          setDocument(text);
+          setChartHtml(chartHtml);
         },
         onError: () => {
           setError(true);

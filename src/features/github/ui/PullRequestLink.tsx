@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Button from '@/shared/ui/Button';
-import { useCallN8nWebhook } from '@/features/n8n/hooks/useCallN8nWebhook';
+import { GeminiResponse, useCallN8nWebhook } from '@/features/n8n/hooks/useCallN8nWebhook';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
 import { modal } from '@/shared/ui/modal/modalApi';
 import Input from '@/shared/ui/input/Input';
@@ -11,7 +11,7 @@ import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
 export const PullRequestLink = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const { mutate } = useCallN8nWebhook();
-  const { setDocument, setPending, setError, isPending } = usedocumentStore();
+  const { setDocument, setChartHtml, setPending, setError, isPending } = usedocumentStore();
   const { selectedFilters } = usePromptFilterStore();
 
   const HandleGenerateFormLink = () => {
@@ -22,8 +22,12 @@ export const PullRequestLink = () => {
     mutate(
       { prUrl: inputValue, filters: selectedFilters },
       {
-        onSuccess: (data) => {
-          setDocument(data?.content.parts[0].text);
+        onSuccess: (data: GeminiResponse) => {
+          console.log(data);
+          const text = data?.content?.parts?.[0]?.text ?? '';
+          const chartHtml = data?.html;
+          setDocument(text);
+          setChartHtml(chartHtml);
         },
         onError: () => {
           setError(true);
