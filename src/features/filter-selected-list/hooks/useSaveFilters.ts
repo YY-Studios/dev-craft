@@ -15,6 +15,6 @@ export const useSaveFilters = () => {
     queryFn: async () => {
       return clientApi<PresetsType[]>('presets');
     },
-    enabled: !useMe,
+    enabled: !!useMe,
   });
 };

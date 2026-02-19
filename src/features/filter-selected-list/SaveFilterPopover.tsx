@@ -32,6 +32,7 @@ export const SaveFilterPopover = () => {
   const handleDelete = (id: number) => {
     deletePresetMutation.mutate(id);
   };
+
   if (!user) return null;
   return (
     <div>

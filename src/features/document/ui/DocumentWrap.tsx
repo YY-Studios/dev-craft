@@ -1,13 +1,36 @@
 'use client';
 
+import { useState } from 'react';
 import Accordion from '@/shared/ui/accordion';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
 import { LoadingAnimation } from '@/shared/ui/loding/LoadingAnimation';
 import { ChartIframe } from './ChartIframe';
 import NoData from '@/shared/ui/NoData';
+import ReactMarkdown from 'react-markdown';
 
 export const DocumentWrap = () => {
   const { document, chartHtml, isPending, isError } = usedocumentStore();
+  const [copiedPlain, setCopiedPlain] = useState(false);
+  const [copiedMarkdown, setCopiedMarkdown] = useState(false);
+
+  // MD 복사
+  const handleCopyMarkdown = () => {
+    navigator.clipboard.writeText(document ?? '');
+    setCopiedMarkdown(true);
+    setTimeout(() => setCopiedMarkdown(false), 2000);
+  };
+
+  // 일반 복사
+  const handleCopyPlain = () => {
+    // 마크다운 기호 제거
+    const plain = (document ?? '')
+      .replace(/[#*`_~>-]/g, '')
+      .replace(/\n+/g, '\n')
+      .trim();
+    navigator.clipboard.writeText(plain);
+    setCopiedPlain(true);
+    setTimeout(() => setCopiedPlain(false), 2000);
+  };
 
   if (isPending) return <LoadingAnimation />;
 
@@ -24,31 +47,47 @@ export const DocumentWrap = () => {
         <Accordion.Item value="item-1">
           <Accordion.Trigger>PR 변경 영향도</Accordion.Trigger>
           <Accordion.Content>
-            <p className="p-4">
-              {isPending ? (
-                'PR 변경 영향도를 불러오는 중입니다...'
-              ) : isError ? (
-                <span className="text-red-500">에러가 발생했습니다. 다시 시도해 주세요.</span>
-              ) : (
-                <ChartIframe chartHtml={chartHtml} />
-              )}
-            </p>
+            <div className="p-4">
+              <ChartIframe chartHtml={chartHtml} />
+            </div>
           </Accordion.Content>
         </Accordion.Item>
       </Accordion>
       <Accordion accordion={false}>
         <Accordion.Item value="item-2">
-          <Accordion.Trigger>생성된 문서</Accordion.Trigger>
+          <Accordion.Trigger>
+            <div className="flex items-center justify-between w-full">
+              <span>생성된 문서</span>
+              <div className="flex gap-2 ml-auto">
+                <div
+                  role="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyPlain();
+                  }}
+                  className="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 transition-all cursor-pointer"
+                >
+                  {copiedPlain ? '✅ 복사됨' : '📋 일반 복사'}
+                </div>
+                <div
+                  role="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCopyMarkdown();
+                  }}
+                  className="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 transition-all cursor-pointer"
+                >
+                  {copiedMarkdown ? '✅ 복사됨' : '🔗 MD 복사'}
+                </div>
+              </div>
+            </div>
+          </Accordion.Trigger>
           <Accordion.Content>
-            <p className="p-4">
-              {isPending ? (
-                '문서를 불러오는 중입니다...'
-              ) : isError ? (
-                <span className="text-red-500">에러가 발생했습니다. 다시 시도해 주세요.</span>
-              ) : (
-                document
-              )}
-            </p>
+            <div className="p-4">
+              <div className="prose prose-sm max-w-none">
+                <ReactMarkdown>{document ?? ''}</ReactMarkdown>
+              </div>
+            </div>
           </Accordion.Content>
         </Accordion.Item>
       </Accordion>

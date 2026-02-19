@@ -30,7 +30,7 @@ const AccordionTrigger = ({ children }: AccordionTriggerProps) => {
       )}
       aria-expanded={isOpen}
     >
-      <span>{children}</span>
+      {children}
       {accordion && (
         <span>
           <img
