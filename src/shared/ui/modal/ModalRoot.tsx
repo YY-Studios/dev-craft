@@ -45,7 +45,7 @@ Modal.Header = function Header({
   children: React.ReactNode;
   className?: string;
 }) {
-  return <div className={cn('text-lg font-semibold mb-4', className)}>{children}</div>;
+  return <div className={cn('text-2xl font-semibold mb-4', className)}>{children}</div>;
 };
 
 Modal.Body = function Body({

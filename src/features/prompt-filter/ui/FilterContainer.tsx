@@ -29,6 +29,7 @@ export function FilterContainer() {
               onToggle={(key) => toggleFilter(category, key)}
               align={align} // 계산된 align 전달
               isSingleSelect={isSingleSelect}
+              isActive={FILTERS[category].options.some((opt) => isChecked(category, opt.key))}
             />
           );
         })}

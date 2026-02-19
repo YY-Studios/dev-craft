@@ -12,6 +12,7 @@ interface FilterPopoverProps {
   onToggle: (key: PromptFilterKey) => void;
   align?: 'start' | 'center' | 'end'; // align 추가
   isSingleSelect: boolean;
+  isActive?: boolean;
 }
 
 export function FilterPopover({
@@ -21,10 +22,11 @@ export function FilterPopover({
   onToggle,
   align,
   isSingleSelect,
+  isActive,
 }: FilterPopoverProps) {
   return (
     <Popover>
-      <PopoverTrigger>{label}</PopoverTrigger>
+      <PopoverTrigger isActive={isActive}>{label}</PopoverTrigger>
       {/* PopoverContent에 계산된 align 전달 */}
       <PopoverContent align={align}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-4">

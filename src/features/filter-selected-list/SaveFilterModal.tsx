@@ -10,6 +10,7 @@ import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
 import { PromptFilterCategory, PromptFilterKey } from '../prompt-filter/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientApi } from '@/shared/api/client/clientApi';
+import { useMe } from '../auth/hooks/useMe';
 
 export type SaveFilterModalProps = {
   onClose: () => void;
@@ -24,6 +25,7 @@ export const SaveFilterModal = ({ onClose }: SaveFilterModalProps) => {
   const [filterName, setFilterName] = useState('');
   const queryClient = useQueryClient();
   const { selectedFilters } = usePromptFilterStore();
+  const { data: user } = useMe();
 
   const savePresetMutation = useMutation({
     mutationFn: async (payload: CreatePresetPayload) => {
@@ -39,9 +41,14 @@ export const SaveFilterModal = ({ onClose }: SaveFilterModalProps) => {
   });
 
   const handleSave = () => {
+    if (!user) {
+      modal.alert('GitHub 로그인 후 이용 가능합니다.');
+      return;
+    }
+
     const name = filterName.trim();
     if (!name) {
-      modal.alert('이름을 입력해주세요');
+      modal.alert('이름을 입력해주세요.');
       return;
     }
 
@@ -55,12 +62,17 @@ export const SaveFilterModal = ({ onClose }: SaveFilterModalProps) => {
   return (
     <>
       <Modal.Header>필터 저장</Modal.Header>
-      <p>현재 선택한 필터를 프리셋으로 저장합니다. 나중에 프리셋에서 바로 불러올 수 있어요.</p>
+      <p>
+        현재 선택한 필터를 프리셋으로 저장합니다.
+        <br />
+        나중에 프리셋에서 바로 불러올 수 있어요.
+      </p>
       <Modal.Body>
         <Input
           placeholder="프리셋 이름을 입력하세요"
           value={filterName}
           onChange={(e) => setFilterName(e.target.value)}
+          className="mt-4 mb-4"
         />
         <FilterSelectedList />
       </Modal.Body>
