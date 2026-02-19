@@ -1,0 +1,605 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3928e558-e92d-4201-9b6b-a9566076e614",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-288, 384],
+      "id": "6c2e62fe-bdc9-4871-984d-9f400086912a",
+      "name": "Webhook",
+      "webhookId": "3928e558-e92d-4201-9b6b-a9566076e613"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [1696, 176],
+      "id": "d83b94b8-e8da-43b4-8077-b6395d9ed464",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const webhookBody = $('Webhook').first().json.body;\n\n// Merge로 들어온 items: pr / issue_comment / line_comment가 섞여있음\nconst prFiles = items.filter(i => i.json.type === 'pr' && i.json.patch);\nconst issueCommentsRaw = items.filter(i => i.json.type === 'issue_comment');\nconst lineCommentsRaw = items.filter(i => i.json.type === 'line_comment');\n\n// diff 합치기\nconst combinedDiff = prFiles\n  .map(i => `### File: ${i.json.filename} (Status: ${i.json.status})\\nDiff:\\n${(i.json.patch || '').slice(0, 1500)}`)\n  .join('\\n\\n---\\n\\n');\n\n// 댓글은 HTTP Request가 \"한 item에 배열\"로 줄 수도 있어서 평탄화\nconst flat = (arr) => {\n  if (arr.length === 1 && Array.isArray(arr[0].json)) return arr[0].json;\n  return arr.map(x => x.json);\n};\n\nconst issueComments = flat(issueCommentsRaw);\nconst lineReviewComments = flat(lineCommentsRaw);\n\nconst cleanText = (s = '') =>\n  String(s)\n    .replace(/<!--[\\s\\S]*?-->/g, '')\n    .replace(/<[^>]*>/g, '')\n    .replace(/\\n{3,}/g, '\\n\\n')\n    .trim();\n\nconst issueText = issueComments.length\n  ? issueComments.map((c, idx) => {\n      const author = c.user?.login ?? 'unknown';\n      const at = c.created_at ?? '';\n      return `[#${idx + 1}] ${author} ${at}\\n${cleanText(c.body).slice(0, 1200)}`;\n    }).join('\\n\\n---\\n\\n')\n  : '없음';\n\nconst lineText = lineReviewComments.length\n  ? lineReviewComments.map((c, idx) => {\n      const author = c.user?.login ?? 'unknown';\n      const at = c.created_at ?? '';\n      const pos = c.path ? `${c.path}${c.line ? `:${c.line}` : ''}` : '';\n      return `[#${idx + 1}] ${author} ${at}\\n${pos}\\n${cleanText(c.body).slice(0, 600)}`;\n    }).join('\\n\\n---\\n\\n')\n  : '없음';\n\nconst fileChangeComment = `## PR 일반 댓글(Conversation)\\n${issueText}\\n\\n## PR 라인 댓글(Files changed)\\n${lineText}`;\n\nreturn [{\n  json: {\n    allFilesDiff: combinedDiff,\n    totalFiles: prFiles.length,\n    conversation: webhookBody,\n    fileChangeComment,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [800, 400],
+      "id": "27ab0c48-436e-4532-9d04-9386d21dfa48",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.body.owner }}/{{ $json.body.repo }}/pulls/{{ $json.body.number }}/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [0, 208],
+      "id": "1e2d4f43-7ba8-402d-8e26-7ec66fc05f85",
+      "name": "pr_req",
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.body.owner }}/{{ $json.body.repo }}/issues/{{ $json.body.number }}/comments?per_page=100",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{}]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [16, 416],
+      "id": "362d9636-c367-4275-9b5d-d12270968d47",
+      "name": "comment req",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.body.owner }}/{{ $json.body.repo }}/pulls/{{ $json.body.number }}/comments?per_page=100\n",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [{}]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [64, 560],
+      "id": "14c896cc-3fdd-4924-a271-7687608430aa",
+      "name": "line review req",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [592, 384],
+      "id": "e128e941-c0c1-4a32-b668-b8376144fd58",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dd4b0e18-f4ef-42db-a836-979939066841",
+              "name": "type",
+              "value": "pr",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [304, 208],
+      "id": "486a3f52-1680-4f43-ba25-c4858d6be1b9",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8546393c-76a6-4fbc-ae72-1cd462fb8a27",
+              "name": "type",
+              "value": "issue_comment",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [320, 368],
+      "id": "5bb266f6-e4cf-492f-abcf-1f840412726e",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fa450458-3f7d-4d8a-9349-b22349708300",
+              "name": "type",
+              "value": "line_comment",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [336, 512],
+      "id": "fdc1b772-28a6-442c-9769-a27d561902bd",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $('Webhook').item.json.body.owner }}/{{ $('Webhook').item.json.body.repo }}/git/trees/HEAD?recursive=1 ",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [192, 0],
+      "id": "dd16215a-ca9a-49aa-ad79-097d67769c40",
+      "name": "HTTP Request",
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const tree = $input.all()[0].json.tree;\n\nconst supportedExtensions = [\n  '.ts', '.tsx',  // TypeScript\n  '.js', '.jsx',  // JavaScript\n  '.py',          // Python\n  '.java',        // Java\n  '.go',          // Go\n];\n\nconst tsFiles = tree.filter(f => \n  f.type === 'blob' &&\n  supportedExtensions.some(ext => f.path.endsWith(ext)) &&\n  !f.path.includes('node_modules') &&\n  !f.path.includes('.next') &&\n  !f.path.includes('dist') &&\n  !f.path.includes('build') &&\n  !f.path.endsWith('.d.ts')\n);\n\nreturn [{ json: { files: tsFiles, count: tsFiles.length } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [400, 0],
+      "id": "59bbc489-8a30-4a13-b56d-61e5ef31ae54",
+      "name": "ts/tsx 필터링"
+    },
+    {
+      "parameters": {
+        "jsCode": "const importPatterns = {\n  '.ts':   /import .+ from ['\"](.+)['\"]/g,\n  '.tsx':  /import .+ from ['\"](.+)['\"]/g,\n  '.js':   /import .+ from ['\"](.+)['\"]/g,\n  '.jsx':  /import .+ from ['\"](.+)['\"]/g,\n  '.py':   /(?:from\\s+(\\S+)\\s+import|^import\\s+(\\S+))/gm,\n  '.java': /import\\s+([\\w.]+);/g,\n  '.go':   /import\\s+[\"`](.+)[\"`]/g,\n};\n\nconst getExt = (path) => '.' + path.split('.').pop();\n\nconst webhookData = $('Webhook').first().json.body;\nconst owner = webhookData.owner;\nconst repo = webhookData.repo;\n\nconst files = $input.all()[0].json.files;\n\nconst queries = files.map((f, i) => \n  `file${i}: object(expression: \"HEAD:${f.path}\") { ... on Blob { text } }`\n).join('\\n');\n\nconst query = `query { repository(owner: \"${owner}\", name: \"${repo}\") { ${queries} } }`;\n\nreturn [{ \n  json: { \n    query,\n    files: files.map(f => f.path),\n  } \n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [592, 0],
+      "id": "103b3687-2915-4c58-bd29-910d6b9075ef",
+      "name": "import 추출"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('HTTP Request1').first().json.data?.repository;\nconst fileList = $('import 추출').first().json.files;\n\nconst importPatterns = {\n  '.ts':   /import .+ from ['\"](.+)['\"]/g,\n  '.tsx':  /import .+ from ['\"](.+)['\"]/g,\n  '.js':   /import .+ from ['\"](.+)['\"]/g,\n  '.jsx':  /import .+ from ['\"](.+)['\"]/g,\n  '.py':   /(?:from\\s+(\\S+)\\s+import|^import\\s+(\\S+))/gm,\n  '.java': /import\\s+([\\w.]+);/g,\n  '.go':   /import\\s+[\"`](.+)[\"`]/g,\n};\n\nconst getExt = (path) => '.' + path.split('.').pop();\n\n// pr_req에서 변경 파일 목록 가져오기\nconst changedFiles = $('pr_req2').all().filter(item => item.json.filename).map(item => item.json.filename);\n\nconst fileImports = {};\nfileList.forEach((path, i) => {\n  const content = data?.[`file${i}`]?.text || '';\n  const ext = getExt(path);\n  const pattern = importPatterns[ext];\n  if (!pattern) return;\n  pattern.lastIndex = 0;\n  const imports = [...content.matchAll(pattern)]\n    .map(m => m[1] || m[2])\n    .filter(Boolean);\n  fileImports[path] = imports;\n});\n\nconst dependencyMap = {};\nchangedFiles.forEach(changed => {\n  const changedName = changed.split('/').pop().replace(/\\.(ts|tsx|js|jsx|py|java|go)$/, '');\n  dependencyMap[changed] = [];\n  fileList.forEach(path => {\n    const imports = fileImports[path] || [];\n    const isImporting = imports.some(imp => imp.includes(changedName));\n    if (isImporting && path !== changed) {\n      dependencyMap[changed].push(path);\n    }\n  });\n});\n\nreturn [{ json: { dependencyMap } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1024, 0],
+      "id": "eacfb15d-5776-44b7-83b8-8b554be572fe",
+      "name": "import 추출 + 의존성 맵 생성"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.github.com/graphql",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{$json.query}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [816, 0],
+      "id": "922d68dd-d001-4380-92d9-01e765c793a5",
+      "name": "HTTP Request1",
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $json.body.owner }}/{{ $json.body.repo }}/pulls/{{ $json.body.number }}/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github+json"
+            },
+            {
+              "name": "X-GitHub-Api-Version",
+              "value": "2022-11-28"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [0, 0],
+      "id": "e93d8935-c54b-43d6-af8f-f6a43d862a19",
+      "name": "pr_req2",
+      "credentials": {
+        "githubApi": {
+          "id": "jWLbPEkZ3tuSlymN",
+          "name": "GitHub account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const dependencyMap = $input.all()[0].json.dependencyMap;\n\nconst changedFiles = new Set(Object.keys(dependencyMap));\nconst affectedFiles = new Set();\nconst impactCount = {};\n\nObject.entries(dependencyMap).forEach(([src, targets]) => {\n  impactCount[src] = targets.length;\n  targets.forEach(t => affectedFiles.add(t));\n});\n\nconst pureAffected = [...affectedFiles].filter(f => !changedFiles.has(f));\nconst warnFiles = [...changedFiles].filter(f => (impactCount[f] || 0) >= 2);\nconst normalChanged = [...changedFiles].filter(f => (impactCount[f] || 0) < 2);\n\nconst getName = (id) => id.split('/').pop();\nconst getDir = (id) => id.split('/').slice(0, -1).join('/');\n\nconst getSize = (id) => {\n  if (!changedFiles.has(id)) return 22;\n  const count = impactCount[id] || 0;\n  if (count >= 3) return 55;\n  if (count === 2) return 45;\n  if (count === 1) return 32;\n  return 22;\n};\n\nconst getColor = (id) => {\n  if (changedFiles.has(id) && (impactCount[id] || 0) >= 2) return '#f59e0b';\n  if (changedFiles.has(id)) return '#ef4444';\n  return '#3b82f6';\n};\n\nconst allNodes = new Set([...changedFiles, ...affectedFiles]);\nconst nodes = [...allNodes].map(id => ({\n  id, name: getName(id), fullPath: id,\n  symbolSize: getSize(id),\n  itemStyle: { color: getColor(id)},\n  label: { show: true, fontSize: getSize(id) > 35 ? 12 : 10, color: '#000' }\n}));\n\nconst edges = [];\nObject.entries(dependencyMap).forEach(([src, targets]) => {\n  targets.forEach(t => edges.push({\n    source: src, target: t,\n    lineStyle: {\n      color: getColor(src) === '#f59e0b' ? '#f59e0b88' : '#47556988',\n      width: (impactCount[src] || 0) >= 2 ? 2.5 : 1.5\n    }\n  }));\n});\n\nconst warnItemsHtml = warnFiles\n  .sort((a,b) => (impactCount[b]||0)-(impactCount[a]||0))\n  .map(f => `<div class=\"file-item changed warn\"><div class=\"file-name\">${getName(f)}<span class=\"badge badge-warn\">⚠️ →${impactCount[f]}개</span></div><div class=\"file-path\">${getDir(f)}</div></div>`).join('');\n\nconst changedItemsHtml = normalChanged\n  .map(f => {\n    const count = impactCount[f] || 0;\n    const badge = count > 0 ? `<span class=\"badge badge-red\">→${count}개</span>` : '';\n    return `<div class=\"file-item changed\"><div class=\"file-name\">${getName(f)}${badge}</div><div class=\"file-path\">${getDir(f)}</div></div>`;\n  }).join('');\n\nconst affectedItemsHtml = pureAffected\n  .map(f => `<div class=\"file-item affected\"><div class=\"file-name\">${getName(f)}</div><div class=\"file-path\">${getDir(f)}</div></div>`).join('');\n\nconst html = `<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <script src=\"https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js\"><\\/script>\n  <style>\n    * { margin: 0; padding: 0; box-sizing: border-box; }\n      body { background: #f8fafc; color: #1e293b; font-family: \"Segoe UI\", monospace; display: flex; height: 100vh; overflow: hidden; } \n      /* ===== Sidebar ===== */ \n      #sidebar { width: 280px; min-width: 280px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; overflow-y: auto; background: #fff; } \n      #sidebar-header { padding: 20px; border-bottom: 1px solid #e2e8f0; background: #f6f8fa; } \n      #sidebar-header h1 { font-size: 15px; color: #0f172a; font-weight: 700; } \n      #sidebar-header p { font-size: 11px; color: #64748b; margin-top: 4px; } \n      .stat-row { display: flex; gap: 8px; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; } \n      .stat-box { flex: 1; background: #f6f8fa; border-radius: 8px; padding: 10px; text-align: center; } \n      .stat-box .num { font-size: 22px; font-weight: 700; } \n      .stat-box .label { font-size: 12px; color: #64748b; margin-top: 2px; } \n      .section-title { padding: 12px 20px 6px; font-size: 13px; font-weight:bold; color: #000; text-transform: uppercase; letter-spacing: 1px; } \n      .file-item { padding: 8px 20px; font-size: 12px; border-left: 3px solid transparent; } \n      .file-item.changed { border-left-color: #ef4444; } \n      .file-item.changed.warn { border-left-color: #f59e0b; background: #fff7ed; } \n      .file-item.affected { border-left-color: #3b82f6; } \n      .file-name { color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } \n      .file-path { color: #94a3b8; font-size: 11px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } \n      .badge { display: inline-block; font-size: 9px; padding: 1px 6px; border-radius: 10px; margin-left: 4px; vertical-align: middle; } \n      .badge-warn { background: #ffedd5; color: #c2410c; } .badge-red { background: #fee2e2; color: #b91c1c; } \n      /* ===== Chart Area ===== */ \n      #chart-area { flex: 1; display: flex; flex-direction: column; background: #ffffff; } \n      #toolbar { padding: 12px 20px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 16px; font-size: 12px; background: #f6f8fa; } \n      @media (max-width: 960px) { #toolbar { flex-direction: column; align-items: flex-start; } } \n      .legend-item { display: flex; align-items: center; gap: 6px; color: #475569; } \n      .legend-dot { width: 12px; height: 12px; border-radius: 50%; } \n      #chart { flex: 1; background: #ffffff; }\n      /* ===== Tooltip ===== */ \n      #tooltip { position: fixed; background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); border-radius: 8px; padding: 10px 14px; font-size: 12px; pointer-events: none; display: none; z-index: 100; max-width: 300px; } \n      #tooltip .t-name { color: #0f172a; font-weight: 600; margin-bottom: 4px; } \n      #tooltip .t-path { color: #64748b; font-size: 11px; word-break: break-all; } \n      #tooltip .t-type { font-size: 11px; margin-top: 6px; padding: 3px 8px; border-radius: 4px; display: inline-block; } \n      .type-warn { background: #ffedd5; color: #c2410c; } \n      .type-changed { background: #fee2e2; color: #b91c1c; } \n      .type-affected { background: #dbeafe; color: #1d4ed8; }\n  </style>\n</head>\n<body>\n<div id=\"sidebar\">\n  <div id=\"sidebar-header\">\n    <h1>🔍 PR 영향도 분석</h1>\n    <p>변경 파일이 어디까지 영향을 주는지 추적</p>\n  </div>\n  <div class=\"stat-row\">\n    <div class=\"stat-box\"><div class=\"num\" style=\"color:#ef4444\">${changedFiles.size}</div><div class=\"label\">변경 파일</div></div>\n    <div class=\"stat-box\"><div class=\"num\" style=\"color:#3b82f6\">${pureAffected.length}</div><div class=\"label\">영향 파일</div></div>\n    <div class=\"stat-box\"><div class=\"num\" style=\"color:#f59e0b\">${warnFiles.length}</div><div class=\"label\">⚠️ 주의</div></div>\n  </div>\n  <div class=\"section-title\">⚠️ 주의 — 영향 범위 큰 변경 파일</div>\n  ${warnItemsHtml}\n  <div class=\"section-title\">변경된 파일</div>\n  ${changedItemsHtml}\n  <div class=\"section-title\">영향받는 파일 (변경 안 됨)</div>\n  ${affectedItemsHtml}\n</div>\n<div id=\"chart-area\">\n  <div id=\"toolbar\">\n    <span style=\"color:#64748b; font-size:12px;\">드래그 이동 · 스크롤 줌 · 노드 크기 = 영향 범위</span>\n    <div style=\"margin-left:auto; display:flex; gap:16px;\">\n      <div class=\"legend-item\"><div class=\"legend-dot\" style=\"background:#f59e0b\"></div> 변경됨 + 영향 큼</div>\n      <div class=\"legend-item\"><div class=\"legend-dot\" style=\"background:#ef4444\"></div> 변경됨</div>\n      <div class=\"legend-item\"><div class=\"legend-dot\" style=\"background:#3b82f6\"></div> 영향받음</div>\n    </div>\n  </div>\n  <div id=\"chart\"></div>\n</div>\n<div id=\"tooltip\">\n  <div class=\"t-name\" id=\"t-name\"></div>\n  <div class=\"t-path\" id=\"t-path\"></div>\n  <div class=\"t-type\" id=\"t-type\"></div>\n</div>\n<script>\n  const changedFiles = new Set(${JSON.stringify([...changedFiles])});\n  const impactCount = ${JSON.stringify(impactCount)};\n  const chart = echarts.init(document.getElementById('chart'));\n  chart.setOption({\n    backgroundColor: '#ffffff',\n    series: [{\n      type: 'graph', layout: 'force', roam: true, draggable: true,\n      force: { repulsion: 320, edgeLength: [80, 180], gravity: 0.08 },\n      nodes: ${JSON.stringify(nodes)},\n      edges: ${JSON.stringify(edges)},\n      edgeSymbol: ['none', 'arrow'], edgeSymbolSize: 8,\n      emphasis: { focus: 'adjacency', lineStyle: { width: 3 } }\n    }]\n  });\n  chart.on('mouseover', (p) => {\n    if (p.dataType !== 'node') return;\n    const d = p.data;\n    const count = impactCount[d.id] || 0;\n    document.getElementById('t-name').textContent = d.name;\n    document.getElementById('t-path').textContent = d.fullPath;\n    const typeEl = document.getElementById('t-type');\n    if (changedFiles.has(d.id) && count >= 2) {\n      typeEl.textContent = '⚠️ 변경됨 · ' + count + '개 파일에 영향';\n      typeEl.className = 't-type type-warn';\n    } else if (changedFiles.has(d.id)) {\n      typeEl.textContent = count > 0 ? '변경됨 · ' + count + '개 파일에 영향' : '변경됨 · 영향 없음';\n      typeEl.className = 't-type type-changed';\n    } else {\n      typeEl.textContent = '영향받는 파일 (변경 안 됨)';\n      typeEl.className = 't-type type-affected';\n    }\n    document.getElementById('tooltip').style.display = 'block';\n  });\n  chart.on('mouseout', () => { document.getElementById('tooltip').style.display = 'none'; });\n  document.addEventListener('mousemove', (e) => {\n    const t = document.getElementById('tooltip');\n    t.style.left = (e.clientX + 12) + 'px';\n    t.style.top = (e.clientY + 12) + 'px';\n  });\n  window.addEventListener('resize', () => chart.resize());\n<\\/script>\n</body>\n</html>`;\n\nreturn [{ json: { html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1232, 0],
+      "id": "f541a8c1-7a7a-42f4-ad8f-4bb785987481",
+      "name": "ECharts HTML 생성"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=너는 “PR 기반 문서/블로그 생성기”다.\n입력으로 주어진 {{ $json.allFilesDiff }}와 {{ $json.conversation.filters }} 값(키)을 근거로, 실제로 쓸 수 있는 Markdown 문서 1편을 만든다.\n\n\n절대 규칙\n- 추측 금지: PR diff / 입력에 없는 파일·기능·동작을 만들어내지 않는다.\n- 확인 불가한 내용은 “추가로 확인할 점” 섹션에 질문으로만 남긴다.\n- 출력은 Markdown 한 편만 (메타 코멘트, 안내문, 사족 금지)\n- {STACK}이 없거나 비어 있으면 특정 프레임워크/라이브러리 이름을 단정해서 끼워 넣지 않는다.\n- 글자수는 반드시 최대 2000자를 넘기지 않는다.\n\n입력(그대로 사용)\npr내용: {{ $json.allFilesDiff }}\n문서 종류: {{ $json.conversation.filters.documentType }}\n글 목적: {{ $json.conversation.filters.purpose }}\n설명 수준: {{ $json.conversation.filters.explanationDepth }}\n독자 타겟: {{ $json.conversation.filters.targetLevel }}\n말투: {{ $json.conversation.filters.toneStyle }}\n글 구조: {{ $json.conversation.filters.contentStructure }}\n스타일 옵션: {{ $json.conversation.filters.styleOptions }}\nPR 기반 옵션: {{ $json.conversation.filters.prOptions }}\n\n필터 해석 규칙(중요)\n- 위 필터 값은 문자열 또는 배열일 수 있다.\n  - 배열이면 “선택된 키 목록”으로 해석한다.\n  - 비어 있거나 null이면 “선택 없음”으로 간주하고 기본값으로 작성한다.\n\n1) 문서 종류(documentType)\n- blog: 사람 냄새 나는 개발 블로그 톤. “내가 겪은 흐름(오해→막힘→해결)”을 기본 뼈대로 쓴다.\n- readme: 실사용자 문서 톤. 간결하고 구조적으로, 실행 가능한 정보(설치/사용/구성)를 우선한다.\n\n2) 글 목적(purpose) — 1개 선택\n- overview: 전체 개요/핵심 기능/목표/대상\n- setupGuide: 설치/환경변수/실행 순서/주의사항\n- usage: 실제 사용 방법/예시/시나리오\n- architecture: 폴더/모듈/레이어/데이터 흐름\n- techDecision: 기술 선택 이유/대안 비교/트레이드오프\n- concept: 핵심 개념 정의 + 왜 필요한지 + PR에서 어떻게 쓰였는지\n- troubleshooting: 문제→원인→해결, 재현/증상/검증 과정을 강조\n- tutorial: 따라하기(단계) 중심, 단계별 결과가 보이게\n- prReview: 변경점 분석/영향 범위/핵심 diff 해석 중심\n- retrospective: 배운 점/아쉬운 점/다음 액션 중심 (과장 금지)\n\n3) 설명 수준(explanationDepth) — 1~2개 선택\n- lineByLine: 중요한 변경 구간을 골라 라인 단위로 짧게 해설(전체 다 하지 말고 상위 3~5개 변경만)\n- keyCode: 핵심 코드/핵심 diff만 발췌해서 설명\n- flowBased: 파일 나열 대신 “흐름(요청→처리→저장/응답)” 중심으로 설명\n- beforeAfter: 가능하면 diff의 삭제/추가를 이용해 Before/After 비교 섹션을 만든다\n\n4) 독자 타겟(targetLevel) — 1개 선택\n- beginner: 용어 정의 먼저, 왜 필요한지부터 설명\n- intermediate: 배경 설명 최소, 실무 포인트/함정/선택 이유 강조\n- advanced: 트레이드오프/확장성/경계 조건/리스크 중심\n\n5) 말투(toneStyle)\n- plain: 군더더기 없이 짧게\n- natural: 자연스러운 문장, 너무 교과서 톤 금지\n- senior: 선배가 맥락 잡아주듯(불필요한 훈계 금지)\n- lecture: 강의처럼 목차/정의/정리 구조를 선명하게\n\n6) 글 구조(contentStructure)\n- summaryFirst: 맨 위에 TL;DR/요약 먼저\n- conclusionFirst: 맨 위에 결론(무엇이 바뀌었고 왜 중요한지) 먼저\n- problemCauseSolution: 전체 흐름을 문제→원인→해결로 고정\n- stepByStep: 단계 1,2,3… 형태로 진행\n- onePointPerParagraph: 한 문단에 한 포인트만(문단 3~5문장)\n\n7) 스타일 옵션(styleOptions)\n- noEmoji: 이모지 0개\n- minEmoji: 이모지 최대 2개\n- table: 최소 1개 표 포함(예: 변경 요약 표, 영향 범위 표, 설정 표)\n- codeHeavy: 코드 블록 많이(3개 이상 권장, 단 억지 금지)\n- codeLight: 코드 블록 최소(1개 이하 권장, 필요할 때만)\n\n충돌 처리\n- noEmoji가 있으면 minEmoji 무시(이모지 0)\n- codeHeavy와 codeLight가 동시에 있으면 codeHeavy 우선\n- summaryFirst와 conclusionFirst가 동시에 있으면 conclusionFirst 우선\n\n8) PR 기반 옵션(prOptions) — 1~3개 선택\n선택된 키는 반드시 “별도 섹션 제목”으로 포함한다.\n- changeSummary: 변경 요약(무엇이 바뀌었는지 5~10줄)\n- majorChanges: 주요 수정 사항(핵심 파일/핵심 로직 3~7개)\n- risks: 리스크 및 주의사항(부작용/엣지케이스/롤백 포인트)\n- learnings: PR에서 배운 점(사실 기반)\n- mistakes: 실수 정리(왜 실수했는지 + 예방책)\n- reviewFeedback: 리뷰 피드백 반영 과정(입력에 근거 있을 때만)\n- ifRedo: 다시 한다면 이렇게(개선안/대안/다음 액션)\n\n문서 출력 규칙(문서 종류에 따라 다름)\n\nA) documentType = blog 일 때\n- 제목 1개\n- 기본 섹션(필수)\n  1. (summaryFirst 또는 conclusionFirst 적용)\n  2. 문제의식/계기 (PR 맥락 포함)\n  3. 내가 처음에 생각한 것 / 막힌 지점 (가능하면 diff 근거로)\n  4. 핵심 개념/원리 (targetLevel 맞춰 깊이 조절)\n  5. 코드/변경 해설 (explanationDepth 규칙 적용)\n  6. 결과/검증/영향 범위 (추측 금지)\n  7. 추가로 확인할 점 (모르면 질문으로만)\n- prOptions로 선택된 섹션은 위 흐름에 자연스럽게 끼워 넣되, “섹션 제목은 반드시 포함”한다.\n- contentStructure가 problemCauseSolution이면 전체 흐름을 그 구조로 재배치한다.\n- 스타일: 금지 표현(“~해보겠습니다/간단히 알아보겠습니다/혁신적/완벽”) 쓰지 말기\n\nB) documentType = readme 일 때\n- 제목 1개\n- 목적(purpose)에 맞는 핵심 섹션을 우선 구성하고, 나머지는 최소화한다.\n  - overview: 프로젝트 개요 / 주요 기능 / 빠른 시작\n  - setupGuide: 요구 사항 / 설치 / 환경변수 / 실행\n  - usage: 사용 방법 / 예시 / 옵션\n  - architecture: 구조 / 디렉토리 / 데이터 흐름\n  - techDecision: 기술 스택 / 선택 이유 / 트레이드오프\n- prOptions(changeSummary/majorChanges/risks 등) 선택된 항목은 별도 섹션으로 반드시 포함한다.\n- table 옵션이 있으면, 환경변수/설정/변경 요약 중 하나는 표로 만든다.\n- codeHeavy면 설치/실행/사용 예시 코드(커맨드/설정) 블록을 충분히 넣는다.\n- codeLight면 최소한의 실행 예시 1개만 유지한다.\n\n작성 시 PR diff 활용 규칙\n- 파일 경로, 추가/삭제된 핵심 로직, 변경된 API/옵션/흐름을 “근거 기반”으로 요약한다.\n- lineByLine을 선택했어도 모든 라인을 해설하지 말고, 영향이 큰 변경 3~5개만 고른다.\n- beforeAfter를 선택했는데 Before 코드가 확실하지 않으면 “diff에 나타난 범위 내에서만” 비교한다.\n\n[출력 제한 규칙]\n- 반드시 Markdown 형식으로 출력한다.\n- 섹션 제목은 ## 또는 ### 헤더를 사용한다.\n- 목록은 - 또는 * 를 사용한다.\n- 무조건 핵심만. 배경 설명/정의/튜토리얼식 장문 금지.\n- 총 12줄 이내(줄바꿈 기준). 한 줄은 한 문장만.\n- PR diff/댓글에 없는 내용은 추측하지 말 것.\n\n이제 위 입력을 바탕으로 Markdown 문서 1편을 출력해라.\n(출력은 문서 본문만, 추가 안내/설명 금지)\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [1008, 400],
+      "id": "8ded9f6c-3778-4c7a-9191-7b4d8a908d26",
+      "name": "제미나이 01",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "b2FZMgP6ETLv6Vqz",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [1488, 176],
+      "id": "394d6a90-9e4b-4238-843c-c44bb0c8a8cc",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=너는 “PR 기반 문서/블로그 생성기”다.\n입력으로 주어진 {{ $json.allFilesDiff }}와 {{ $json.conversation.filters }} 값(키)을 근거로, 실제로 쓸 수 있는 Markdown 문서 1편을 만든다.\n\n\n절대 규칙\n- 추측 금지: PR diff / 입력에 없는 파일·기능·동작을 만들어내지 않는다.\n- 확인 불가한 내용은 “추가로 확인할 점” 섹션에 질문으로만 남긴다.\n- 출력은 Markdown 한 편만 (메타 코멘트, 안내문, 사족 금지)\n- {STACK}이 없거나 비어 있으면 특정 프레임워크/라이브러리 이름을 단정해서 끼워 넣지 않는다.\n- 글자수는 반드시 최대 2000자를 넘기지 않는다.\n\n입력(그대로 사용)\npr내용: {{ $json.allFilesDiff }}\n문서 종류: {{ $json.conversation.filters.documentType }}\n글 목적: {{ $json.conversation.filters.purpose }}\n설명 수준: {{ $json.conversation.filters.explanationDepth }}\n독자 타겟: {{ $json.conversation.filters.targetLevel }}\n말투: {{ $json.conversation.filters.toneStyle }}\n글 구조: {{ $json.conversation.filters.contentStructure }}\n스타일 옵션: {{ $json.conversation.filters.styleOptions }}\nPR 기반 옵션: {{ $json.conversation.filters.prOptions }}\n\n필터 해석 규칙(중요)\n- 위 필터 값은 문자열 또는 배열일 수 있다.\n  - 배열이면 “선택된 키 목록”으로 해석한다.\n  - 비어 있거나 null이면 “선택 없음”으로 간주하고 기본값으로 작성한다.\n\n1) 문서 종류(documentType)\n- blog: 사람 냄새 나는 개발 블로그 톤. “내가 겪은 흐름(오해→막힘→해결)”을 기본 뼈대로 쓴다.\n- readme: 실사용자 문서 톤. 간결하고 구조적으로, 실행 가능한 정보(설치/사용/구성)를 우선한다.\n\n2) 글 목적(purpose) — 1개 선택\n- overview: 전체 개요/핵심 기능/목표/대상\n- setupGuide: 설치/환경변수/실행 순서/주의사항\n- usage: 실제 사용 방법/예시/시나리오\n- architecture: 폴더/모듈/레이어/데이터 흐름\n- techDecision: 기술 선택 이유/대안 비교/트레이드오프\n- concept: 핵심 개념 정의 + 왜 필요한지 + PR에서 어떻게 쓰였는지\n- troubleshooting: 문제→원인→해결, 재현/증상/검증 과정을 강조\n- tutorial: 따라하기(단계) 중심, 단계별 결과가 보이게\n- prReview: 변경점 분석/영향 범위/핵심 diff 해석 중심\n- retrospective: 배운 점/아쉬운 점/다음 액션 중심 (과장 금지)\n\n3) 설명 수준(explanationDepth) — 1~2개 선택\n- lineByLine: 중요한 변경 구간을 골라 라인 단위로 짧게 해설(전체 다 하지 말고 상위 3~5개 변경만)\n- keyCode: 핵심 코드/핵심 diff만 발췌해서 설명\n- flowBased: 파일 나열 대신 “흐름(요청→처리→저장/응답)” 중심으로 설명\n- beforeAfter: 가능하면 diff의 삭제/추가를 이용해 Before/After 비교 섹션을 만든다\n\n4) 독자 타겟(targetLevel) — 1개 선택\n- beginner: 용어 정의 먼저, 왜 필요한지부터 설명\n- intermediate: 배경 설명 최소, 실무 포인트/함정/선택 이유 강조\n- advanced: 트레이드오프/확장성/경계 조건/리스크 중심\n\n5) 말투(toneStyle)\n- plain: 군더더기 없이 짧게\n- natural: 자연스러운 문장, 너무 교과서 톤 금지\n- senior: 선배가 맥락 잡아주듯(불필요한 훈계 금지)\n- lecture: 강의처럼 목차/정의/정리 구조를 선명하게\n\n6) 글 구조(contentStructure)\n- summaryFirst: 맨 위에 TL;DR/요약 먼저\n- conclusionFirst: 맨 위에 결론(무엇이 바뀌었고 왜 중요한지) 먼저\n- problemCauseSolution: 전체 흐름을 문제→원인→해결로 고정\n- stepByStep: 단계 1,2,3… 형태로 진행\n- onePointPerParagraph: 한 문단에 한 포인트만(문단 3~5문장)\n\n7) 스타일 옵션(styleOptions)\n- noEmoji: 이모지 0개\n- minEmoji: 이모지 최대 2개\n- table: 최소 1개 표 포함(예: 변경 요약 표, 영향 범위 표, 설정 표)\n- codeHeavy: 코드 블록 많이(3개 이상 권장, 단 억지 금지)\n- codeLight: 코드 블록 최소(1개 이하 권장, 필요할 때만)\n\n충돌 처리\n- noEmoji가 있으면 minEmoji 무시(이모지 0)\n- codeHeavy와 codeLight가 동시에 있으면 codeHeavy 우선\n- summaryFirst와 conclusionFirst가 동시에 있으면 conclusionFirst 우선\n\n8) PR 기반 옵션(prOptions) — 1~3개 선택\n선택된 키는 반드시 “별도 섹션 제목”으로 포함한다.\n- changeSummary: 변경 요약(무엇이 바뀌었는지 5~10줄)\n- majorChanges: 주요 수정 사항(핵심 파일/핵심 로직 3~7개)\n- risks: 리스크 및 주의사항(부작용/엣지케이스/롤백 포인트)\n- learnings: PR에서 배운 점(사실 기반)\n- mistakes: 실수 정리(왜 실수했는지 + 예방책)\n- reviewFeedback: 리뷰 피드백 반영 과정(입력에 근거 있을 때만)\n- ifRedo: 다시 한다면 이렇게(개선안/대안/다음 액션)\n\n문서 출력 규칙(문서 종류에 따라 다름)\n\nA) documentType = blog 일 때\n- 제목 1개\n- 기본 섹션(필수)\n  1. (summaryFirst 또는 conclusionFirst 적용)\n  2. 문제의식/계기 (PR 맥락 포함)\n  3. 내가 처음에 생각한 것 / 막힌 지점 (가능하면 diff 근거로)\n  4. 핵심 개념/원리 (targetLevel 맞춰 깊이 조절)\n  5. 코드/변경 해설 (explanationDepth 규칙 적용)\n  6. 결과/검증/영향 범위 (추측 금지)\n  7. 추가로 확인할 점 (모르면 질문으로만)\n- prOptions로 선택된 섹션은 위 흐름에 자연스럽게 끼워 넣되, “섹션 제목은 반드시 포함”한다.\n- contentStructure가 problemCauseSolution이면 전체 흐름을 그 구조로 재배치한다.\n- 스타일: 금지 표현(“~해보겠습니다/간단히 알아보겠습니다/혁신적/완벽”) 쓰지 말기\n\nB) documentType = readme 일 때\n- 제목 1개\n- 목적(purpose)에 맞는 핵심 섹션을 우선 구성하고, 나머지는 최소화한다.\n  - overview: 프로젝트 개요 / 주요 기능 / 빠른 시작\n  - setupGuide: 요구 사항 / 설치 / 환경변수 / 실행\n  - usage: 사용 방법 / 예시 / 옵션\n  - architecture: 구조 / 디렉토리 / 데이터 흐름\n  - techDecision: 기술 스택 / 선택 이유 / 트레이드오프\n- prOptions(changeSummary/majorChanges/risks 등) 선택된 항목은 별도 섹션으로 반드시 포함한다.\n- table 옵션이 있으면, 환경변수/설정/변경 요약 중 하나는 표로 만든다.\n- codeHeavy면 설치/실행/사용 예시 코드(커맨드/설정) 블록을 충분히 넣는다.\n- codeLight면 최소한의 실행 예시 1개만 유지한다.\n\n작성 시 PR diff 활용 규칙\n- 파일 경로, 추가/삭제된 핵심 로직, 변경된 API/옵션/흐름을 “근거 기반”으로 요약한다.\n- lineByLine을 선택했어도 모든 라인을 해설하지 말고, 영향이 큰 변경 3~5개만 고른다.\n- beforeAfter를 선택했는데 Before 코드가 확실하지 않으면 “diff에 나타난 범위 내에서만” 비교한다.\n\n[출력 제한 규칙]\n- 무조건 핵심만. 배경 설명/정의/튜토리얼식 장문 금지.\n- 총 12줄 이내(줄바꿈 기준). 한 줄은 한 문장만.\n- 섹션은 아래 4개만 출력:\n  1) 요약: 3줄\n  2) 변경: 최대 6줄(파일/기능 단위로 “무엇이 바뀜”만)\n  3) 리뷰/댓글: 최대 3줄(있으면 핵심만, 없으면 “없음” 1줄)\n  4) 체크: 최대 3줄(리스크/추가확인)\n- PR diff/댓글에 없는 내용은 추측하지 말 것.\n\n이제 위 입력을 바탕으로 Markdown 문서 1편을 출력해라.\n(출력은 문서 본문만, 추가 안내/설명 금지)\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [992, 608],
+      "id": "3093023c-8871-4522-bc89-e2aaa01e7d15",
+      "name": "gpt 01"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "pr_req",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "comment req",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "line review req",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "pr_req2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "제미나이 01",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pr_req": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "comment req": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "line review req": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "ts/tsx 필터링",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ts/tsx 필터링": {
+      "main": [
+        [
+          {
+            "node": "import 추출",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import 추출": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "import 추출 + 의존성 맵 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "pr_req2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "import 추출 + 의존성 맵 생성": {
+      "main": [
+        [
+          {
+            "node": "ECharts HTML 생성",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ECharts HTML 생성": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "제미나이 01": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "47b0b5c6-a731-44fd-9070-54b5de828587",
+  "meta": {
+    "instanceId": "2c64b1be19a9c62516be8a45731169c0563007884fd8ed632116072f82f087d4"
+  },
+  "id": "n4zTenDU053Eca7s0NnZa",
+  "tags": []
+}
