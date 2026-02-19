@@ -43,12 +43,12 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
               />
               <label
                 htmlFor={`pr-${pr.number}`}
-                className="group block rounded-xl border border-gray-300 bg-white p-5 cursor-pointer
+                className="group block rounded-xl border border-gray-300 bg-white px-3.5 py-3 cursor-pointer
                      hover:border-gray-600 hover:bg-gray-50 hover:shadow-md
                      peer-checked:border-gray-600 peer-checked:bg-gray-600/5 peer-checked:ring-1 peer-checked:ring-gray-600/20"
               >
                 {/* 상단: PR 번호 및 상태 배지 */}
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-1.5">
                   <span className="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-full">
                     #{pr.number}
                   </span>
@@ -64,7 +64,7 @@ export const PullRequsetSelect = ({ searchQuery }: PullRequestSelectProps) => {
                 </div>
 
                 {/* 중단: 제목 (체크 시 텍스트 컬러 변경) */}
-                <strong className="font-semibold text-gray-800 peer-checked:text-blue-800 transition-colors line-clamp-2 mb-2">
+                <strong className="font-semibold text-gray-800 peer-checked:text-blue-800 transition-colors line-clamp-2 mb-1">
                   {pr.title}
                 </strong>
 
