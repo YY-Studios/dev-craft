@@ -11,18 +11,23 @@ const triggerVariants = tv({
       true: 'bg-white border-gray-400 text-gray-600 shadow-sm',
       false: 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-400',
     },
+    isActive: {
+      true: 'border-slate-700 border-1 bg-slate-50 text-slate-900 shadow-sm',
+    },
   },
   defaultVariants: {
     isOpen: false,
+    isActive: false,
   },
 });
 
 interface PopoverTriggerProps {
   children: React.ReactNode;
   className?: string;
+  isActive?: boolean;
 }
 
-export function PopoverTrigger({ children, className }: PopoverTriggerProps) {
+export function PopoverTrigger({ children, className, isActive }: PopoverTriggerProps) {
   const { isOpen, setIsOpen } = usePopover();
 
   return (
@@ -30,7 +35,7 @@ export function PopoverTrigger({ children, className }: PopoverTriggerProps) {
       type="button"
       onClick={() => setIsOpen(!isOpen)}
       aria-expanded={isOpen}
-      className={triggerVariants({ isOpen, className })}
+      className={triggerVariants({ isOpen, className, isActive })}
     >
       {children}
       <Image src={isOpen ? chevronUp : chevronDown} className="w-4 h-4" alt="" aria-hidden />
