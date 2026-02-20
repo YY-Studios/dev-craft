@@ -49,7 +49,7 @@ export const PullRequestFetch = () => {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">PR 불러오기</h2>
+        <h2 className="text-xl font-bold border-l-5 border-primary pl-2">PR 불러오기</h2>
         <Button
           onClick={() => {
             const id = open({

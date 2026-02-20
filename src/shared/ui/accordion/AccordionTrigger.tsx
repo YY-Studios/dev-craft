@@ -24,7 +24,7 @@ const AccordionTrigger = ({ children }: AccordionTriggerProps) => {
       type="button"
       onClick={handleClick}
       className={cn(
-        'flex items-center justify-between w-full p-6 border-gray-200 text-xl font-semibold',
+        'flex items-center justify-between w-full p-6 border-gray-200 text-lg font-semibold',
         isOpen && 'border-b',
         accordion ? 'cursor-pointer' : 'cursor-default',
       )}
