@@ -32,7 +32,6 @@ export const PullRequestStepWrap = ({ onClose }: PullRequestStepWrapProps) => {
       modal.alert('레포지토리를 선택주세요');
       return;
     }
-    alert(selectRepo);
     setSelectOrg(selectOrg, selectRepo);
     onClose();
   };

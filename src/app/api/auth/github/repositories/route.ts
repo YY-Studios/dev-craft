@@ -25,7 +25,7 @@ export async function GET(request: Request) {
       : `https://api.github.com/orgs/${repo}/repos`;
 
   // 내가 선택한 조직에 대한 레포지토리 리스트 불러오기
-  const repoRes = await fetch(`${baseUrl}?page=${page}&per_page=10`, {
+  const repoRes = await fetch(`${baseUrl}?page=${page}&per_page=5`, {
     headers: { Authorization: `Bearer ${githubToken}` },
   });
 

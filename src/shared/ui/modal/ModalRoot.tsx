@@ -1,5 +1,5 @@
 import { cn } from '@/shared/lib/cn';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export const Modal = ({
   open,
@@ -10,6 +10,18 @@ export const Modal = ({
   onClose: () => void;
   children: React.ReactNode;
 }) => {
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
+
   if (!open) return null;
 
   return (
