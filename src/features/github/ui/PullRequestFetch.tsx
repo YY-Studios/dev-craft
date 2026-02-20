@@ -72,7 +72,7 @@ export const PullRequestFetch = () => {
         className="w-full mt-10"
         onClick={handleGenerateFromSelect}
         disabled={isPending || !selectedPrUrl}
-        variant="secondary"
+        variant={selectedPrUrl ? 'primary' : 'secondary'}
       >
         {isPending ? '생성 중...' : '문서 생성하기 (불러오기)'}
       </Button>

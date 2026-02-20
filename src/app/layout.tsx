@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: '개발자 공방 | PR 기반 문서 자동화 도구',
     description: 'GitHub PR URL 하나로 블로그 글, README, 영향도 그래프를 자동 생성합니다.',
     siteName: '개발자 공방',
-    // images: [{ url: '/og-image.png', width: 1200, height: 630 }], // OG 이미지 있으면 추가
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
