@@ -29,7 +29,7 @@ export function FilterPopover({
       <PopoverTrigger isActive={isActive}>{label}</PopoverTrigger>
       {/* PopoverContent에 계산된 align 전달 */}
       <PopoverContent align={align}>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 pb-4">
           {options.map(({ key, label }) =>
             isSingleSelect ? (
               <Radio

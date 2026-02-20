@@ -23,7 +23,7 @@ export function PopoverContent({ children, className, align = 'start' }: Popover
       className={cn(
         'absolute top-full mt-2 z-50',
         'bg-white rounded-2xl shadow-xl',
-        'p-5 w-full md:min-w-[360px]',
+        'p-5 w-full lg:min-w-[360px]',
         alignClass[align],
         className,
       )}
