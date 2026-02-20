@@ -47,7 +47,7 @@ export const SaveFilterPopover = () => {
               data?.map((filter) => (
                 <li
                   key={filter.id}
-                  className="group flex items-center justify-between hover:bg-slate-100 transition-colors border-b-1 border-gray-200"
+                  className="group flex items-center justify-between hover:bg-slate-100 transition-colors border-b-1 border-gray-200 last:border-b-0"
                 >
                   {/* 필터 선택 버튼 */}
                   <button

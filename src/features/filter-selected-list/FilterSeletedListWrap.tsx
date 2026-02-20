@@ -27,7 +27,7 @@ export const FilterSelectedListWrap = () => {
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">문서 생성 옵션</h2>
+        <h2 className="text-xl font-bold border-l-5 border-primary pl-2">문서 생성 옵션</h2>
         <Button variant="gray" onClick={handleSaveFilter}>
           필터 저장
         </Button>

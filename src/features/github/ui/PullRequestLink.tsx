@@ -39,8 +39,8 @@ export const PullRequestLink = () => {
   };
 
   return (
-    <section className="space-y-3">
-      <h2 className="text-lg font-semibold">PR 링크 입력</h2>
+    <section className="space-y-4">
+      <h2 className="text-xl font-bold border-l-5 border-primary pl-2">PR 링크 입력</h2>
       <Input
         type="text"
         placeholder="GitHub PR 링크를 붙여넣으세요"
@@ -53,6 +53,7 @@ export const PullRequestLink = () => {
         className="w-full mt-5"
         onClick={() => HandleGenerateFormLink()}
         disabled={isPending || !inputValue}
+        variant={inputValue ? 'primary' : 'secondary'}
       >
         {isPending ? '생성 중...' : '문서 생성하기'}
       </Button>
