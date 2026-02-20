@@ -39,6 +39,7 @@ export const PullRequestFetch = () => {
           setChartHtml(chartHtml);
         },
         onError: () => {
+          setPending(false);
           setError(true);
         },
       },
