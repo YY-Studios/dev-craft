@@ -32,7 +32,7 @@ export const PullRequestLink = () => {
         onError: (e) => {
           setPending(false);
           setError(true);
-          modal.alert('pr 주소를 확인해주세요.');
+          modal.alert(e.message);
         },
       },
     );
