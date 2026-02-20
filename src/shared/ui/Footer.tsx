@@ -21,7 +21,12 @@ export const Footer = () => {
             본 서비스는 사용자 본인의 GitHub PR 분석을 돕기 위한 도구이며, 데이터를 별도로 저장하지
             않습니다.
           </p>
-          <p className="text-xs">© {new Date().getFullYear()} **DevCraft**. All rights reserved.</p>
+          <div className="text-xs flex items-center justify-center gap-2">
+            <span>© {new Date().getFullYear()} 개발자공방</span>
+            <span className="text-gray-300">|</span>
+            {/* 여기에 사용자님의 이름을 넣으세요 */}
+            <span>Created by 이영우, 박유진</span>
+          </div>
         </div>
       </div>
     </footer>
