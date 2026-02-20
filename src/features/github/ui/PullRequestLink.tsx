@@ -29,8 +29,10 @@ export const PullRequestLink = () => {
           setDocument(text);
           setChartHtml(chartHtml);
         },
-        onError: () => {
+        onError: (e) => {
+          setPending(false);
           setError(true);
+          modal.alert('pr 주소를 확인해주세요.');
         },
       },
     );
