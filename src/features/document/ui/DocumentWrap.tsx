@@ -41,9 +41,17 @@ export const DocumentWrap = () => {
         description="잠시 후 다시 시도해주세요."
       />
     );
+  if (document === null || chartHtml === '') {
+    return (
+      <NoData
+        message="분석 결과가 없습니다"
+        description="문서 생성하기를 눌러 결과를 확인하세요."
+      />
+    );
+  }
   return (
     <section className="flex flex-col gap-8">
-      <Accordion>
+      <Accordion defaultOpenItem={chartHtml ? 'item-1' : null}>
         <Accordion.Item value="item-1">
           <Accordion.Trigger>PR 변경 영향도</Accordion.Trigger>
           <Accordion.Content>
