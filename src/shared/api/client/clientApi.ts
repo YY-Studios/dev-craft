@@ -15,12 +15,12 @@ export async function clientApi<T>(path: string, options?: ClientApiOptions): Pr
 
   if (!res.ok) {
     const raw = await res.text();
-    let message = 'Request failed';
+    let message = '잠시후 다시 시도해주세요.';
 
     if (raw) {
       try {
-        const data = JSON.parse(raw) as { message?: string };
-        message = data.message ?? message;
+        const data = JSON.parse(raw) as { message?: string; error?: string };
+        message = data.message ?? data.error ?? message;
       } catch {
         message = raw;
       }
