@@ -7,6 +7,7 @@ import { LoadingAnimation } from '@/shared/ui/loding/LoadingAnimation';
 import { ChartIframe } from './ChartIframe';
 import NoData from '@/shared/ui/NoData';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export const DocumentWrap = () => {
   const { document, chartHtml, isPending, isError } = usedocumentStore();
@@ -93,7 +94,7 @@ export const DocumentWrap = () => {
           <Accordion.Content>
             <div className="p-4">
               <div className="prose prose-sm max-w-none">
-                <ReactMarkdown>{document ?? ''}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{document ?? ''}</ReactMarkdown>
               </div>
             </div>
           </Accordion.Content>
