@@ -1,3 +1,6 @@
+export const metadata = {
+  title: 'DevCraft',
+};
 import { PullRequestWrap } from './../features/github/ui/PullRequestWrap';
 import { FilterSelectedListWrap } from '@/features/filter-selected-list/FilterSeletedListWrap';
 import { DocumentWrap } from '@/features/document/ui/DocumentWrap';
