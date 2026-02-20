@@ -4,6 +4,7 @@ import { Header } from '@/shared/ui/Header';
 import './globals.css';
 import { QueryProvider } from '@/shared/providers/QueryProvider';
 import { ModalProvider } from '@/shared/ui/modal/ModalProvider';
+import { Footer } from '@/shared/ui/Footer';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -22,6 +23,7 @@ export default function RootLayout({
           <ModalProvider>
             <Header />
             <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+            <Footer />
           </ModalProvider>
         </QueryProvider>
       </body>
