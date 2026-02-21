@@ -49,7 +49,7 @@ export default function RootLayout({
         <QueryProvider>
           <ModalProvider>
             <Header />
-            <main className="mx-auto max-w-5xl px-6 py-10">{children}</main>
+            <main className="mx-auto max-w-7xl px-6 py-10">{children}</main>
             <Footer />
           </ModalProvider>
         </QueryProvider>

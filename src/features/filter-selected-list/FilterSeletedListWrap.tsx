@@ -7,10 +7,12 @@ import { SaveFilterModal } from './SaveFilterModal';
 import { Modal } from '@/shared/ui/modal/ModalRoot';
 import { useModal } from '@/shared/ui/modal/ModalProvider';
 import { useSaveFilters } from './hooks/useSaveFilters';
+import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
 
 export const FilterSelectedListWrap = () => {
   const { open, close } = useModal();
   const { data } = useSaveFilters();
+  const { resetFilters } = usePromptFilterStore();
 
   const handleSaveFilter = () => {
     const id = open({
@@ -32,7 +34,17 @@ export const FilterSelectedListWrap = () => {
           필터 저장
         </Button>
       </div>
-      <FilterContainer />
+      <div className="flex items-center gap-4">
+        <FilterContainer />
+        <button
+          type="button"
+          className=" font-bold border-b-1 cursor-pointer text-sm text-gray-700"
+          onClick={resetFilters}
+        >
+          선택 삭제
+        </button>
+      </div>
+
       <FilterSelectedList />
     </section>
   );
