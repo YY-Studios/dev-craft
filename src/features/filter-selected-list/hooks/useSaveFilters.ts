@@ -10,11 +10,12 @@ interface PresetsType {
 }
 
 export const useSaveFilters = () => {
+  const { data: me } = useMe();
   return useQuery({
     queryKey: ['presets'],
     queryFn: async () => {
       return clientApi<PresetsType[]>('presets');
     },
-    enabled: !!useMe,
+    enabled: !!me,
   });
 };
