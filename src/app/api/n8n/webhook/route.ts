@@ -14,7 +14,10 @@ export async function POST(request: Request) {
   });
 
   if (!n8nRes.ok) {
-    return NextResponse.json({ message: 'n8n 요청 실패' }, { status: n8nRes.status });
+    return NextResponse.json(
+      { message: '현재 서버를 정비 중이에요. 조금만 기다려 주세요 😊' },
+      { status: n8nRes.status },
+    );
   }
 
   const data = await n8nRes.json();
