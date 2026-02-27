@@ -14,6 +14,7 @@ import { GeminiResponse, useCallN8nWebhook } from '@/features/n8n/hooks/useCallN
 import { usePrStore } from '@/shared/stores/usePrStore';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
 import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
+import { useMe } from '@/features/auth/hooks/useMe';
 
 export const PullRequestFetch = () => {
   const { open, close } = useModal();
@@ -22,6 +23,7 @@ export const PullRequestFetch = () => {
   const { selectedPrUrl } = usePrStore();
   const { setDocument, setChartHtml, setPending, setError, isPending } = usedocumentStore();
   const { selectedFilters } = usePromptFilterStore();
+  const { data: me } = useMe();
 
   const handleGenerateFromSelect = () => {
     if (!selectedPrUrl) {
@@ -46,25 +48,27 @@ export const PullRequestFetch = () => {
     );
   };
 
+  const handleSelectRepository = () => {
+    if (!me) {
+      modal.alert('로그인이 필요합니다.');
+      return;
+    }
+    const id = open({
+      component: (
+        <Modal.Content>
+          <Modal.Body>
+            <PullRequestStepWrap onClose={() => close(id)} />
+          </Modal.Body>
+        </Modal.Content>
+      ),
+    });
+  };
+
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold border-l-5 border-primary pl-2">PR 불러오기</h2>
-        <Button
-          onClick={() => {
-            const id = open({
-              component: (
-                <Modal.Content>
-                  <Modal.Body>
-                    <PullRequestStepWrap onClose={() => close(id)} />
-                  </Modal.Body>
-                </Modal.Content>
-              ),
-            });
-          }}
-        >
-          repository 선택
-        </Button>
+        <Button onClick={() => handleSelectRepository()}>repository 선택</Button>
       </div>
       <PullRequsetSearch onSearch={setSearchQuery} />
       <PullRequsetSelect searchQuery={searchQuery} />
