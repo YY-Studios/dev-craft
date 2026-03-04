@@ -49,3 +49,7 @@
 body {
   @apply bg-bg text-fg font-sans;
 }
+
+button {
+  @apply cursor-pointer;
+}
