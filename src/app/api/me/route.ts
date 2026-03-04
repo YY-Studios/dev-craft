@@ -16,7 +16,7 @@ export async function GET() {
     // verifyAccessToken으로 토큰 검증
     const { user_id } = verifyAccessToken(accessToken);
     //payload의 user_id로 user 테이블 조회 유저이름도 못뽑고 유저 이멜도 못뽑고 그래짜나요?
-    const user = await serverApi<User[]>(`/user?id=eq.${user_id}`);
+    const user = await serverApi<User[]>(`/users?id=eq.${user_id}`);
     //유저 정보 반환
     return NextResponse.json(user[0]);
   } catch (error) {
