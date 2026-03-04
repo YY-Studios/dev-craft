@@ -4,7 +4,7 @@ import { DocumentWrap } from '@/features/document/ui/DocumentWrap';
 import { AdFitBanner } from '@/features/adfit/AdFitBanner';
 export default function MainPage() {
   return (
-    <div className=" space-y-10">
+    <div className="space-y-10">
       {/* 광고 */}
       <AdFitBanner />
       {/* pr 링크 넣기 + 불러오기 */}
