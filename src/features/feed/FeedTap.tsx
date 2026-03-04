@@ -13,7 +13,7 @@ export const FeedTap = () => {
         <button
           key={tab}
           onClick={() => setActiveTab(tab)}
-          className={`px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer relative ${
+          className={`px-4 py-2.5 text-xl font-medium transition-colors cursor-pointer relative ${
             activeTab === tab ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'
           }`}
         >
