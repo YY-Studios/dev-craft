@@ -1,5 +1,8 @@
 import { MOCK_POSTS } from '@/app/feed/page';
 
+import check from '@/shared/assets/icons/icon_check.svg';
+import Image from 'next/image';
+
 export function FeedCard({ post }: { post: (typeof MOCK_POSTS)[0] }) {
   return (
     <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
@@ -10,8 +13,11 @@ export function FeedCard({ post }: { post: (typeof MOCK_POSTS)[0] }) {
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
         {post.is_author_verified && (
-          <span className="absolute top-2 left-2 bg-black/70 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">
-            <span className="text-primary">✓</span> OWNER
+          <span className="absolute items-baseline flex gap-0.5 top-2 left-2 bg-black/70 text-white text-[10px] font-medium pl-1.5 pr-2 py-0.5 rounded-full">
+            <span>
+              <Image src={check} alt="" width={11} height={11} className="translate-y-[2px]" />
+            </span>{' '}
+            OWNER
           </span>
         )}
       </div>
