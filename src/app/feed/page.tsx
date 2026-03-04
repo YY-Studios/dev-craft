@@ -41,7 +41,7 @@ export default function FeedPage({ searchParams }: { searchParams: { q?: string 
           </Suspense>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(271px,1fr))] gap-3">
         {filtered.map((post) => (
           <FeedCard key={post.id} post={post} />
         ))}
