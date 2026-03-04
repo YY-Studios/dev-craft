@@ -1,6 +1,7 @@
 import { FeedCard } from '@/features/feed/FeedCard';
 import { FeedTap } from './../../features/feed/FeedTap';
 import { FeedSearch } from './../../features/feed/FeedSearch';
+import { Suspense } from 'react';
 
 // 임시 카드 DB 데이터
 export const MOCK_POSTS = Array.from({ length: 10 }, (_, i) => ({
@@ -35,7 +36,9 @@ export default function FeedPage({ searchParams }: { searchParams: { q?: string 
           <FeedTap />
         </div>
         <div className="max-w-xs pb-1 mt-2 md:mt-0">
-          <FeedSearch />
+          <Suspense fallback={null}>
+            <FeedSearch />
+          </Suspense>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
