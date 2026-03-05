@@ -1,9 +1,13 @@
+'use client';
 import { MOCK_POSTS } from '@/app/feed/page';
 
 import check from '@/shared/assets/icons/icon_check.svg';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useMe } from '../auth/hooks/useMe';
 
 export function FeedCard({ post }: { post: (typeof MOCK_POSTS)[0] }) {
+  const { data: user } = useMe();
   return (
     <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
       <div className="aspect-video overflow-hidden bg-gray-100 relative">
@@ -40,6 +44,7 @@ export function FeedCard({ post }: { post: (typeof MOCK_POSTS)[0] }) {
           </div>
         </div>
       </div>
+      <Link href={`/${user?.username}/posts`}>나의 공방</Link>
     </div>
   );
 }
