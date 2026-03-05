@@ -33,9 +33,9 @@
   --color-primary-hover: rgb(6 182 212);
   --color-primary-active: rgb(21 94 117);
 
-  --color-secondary: rgb(235 225 210);
-  --color-secondary-hover: rgb(225 210 190);
-  --color-secondary-active: rgb(215 195 170);
+  --color-secondary: rgb(139 92 246); /* Violet 500 */
+  --color-secondary-hover: rgb(124 58 237); /* Violet 600 */
+  --color-secondary-active: rgb(109 40 217); /* Violet 700 */
 
   --color-bg: rgb(255 245 235);
   --color-fg: rgb(60 60 60);
@@ -52,4 +52,8 @@ body {
 
 button {
   @apply cursor-pointer;
+}
+
+.container {
+  @apply max-w-7xl px-6 py-10;
 }

@@ -5,7 +5,7 @@ export default async function PostsPage({ params }: { params: Promise<{ username
   const { username } = await params;
 
   return (
-    <div className="flex flex-col md:flex-row gap-3">
+    <div className="container mx-auto flex flex-col md:flex-row gap-3">
       <PostAside />
       <section className="flex-1">
         <p>현재 경로의 유저: {username}</p>
