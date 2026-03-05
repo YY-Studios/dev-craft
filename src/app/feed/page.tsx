@@ -30,7 +30,7 @@ export default function FeedPage({ searchParams }: { searchParams: { q?: string 
   });
 
   return (
-    <div className="max-w-6xl mx-auto px-0 py-0 md:px-4 md:py-6">
+    <>
       <div className="flex flex-wrap items-baseline justify-between mb-2 md:mb-6 border-gray-200">
         <div className="flex">
           <FeedTap />
@@ -46,6 +46,6 @@ export default function FeedPage({ searchParams }: { searchParams: { q?: string 
           <FeedCard key={post.id} post={post} />
         ))}
       </div>
-    </div>
+    </>
   );
 }

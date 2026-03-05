@@ -32,13 +32,15 @@
 import Link, { type LinkProps } from 'next/link';
 import { ComponentPropsWithoutRef, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'gray' | 'tab' | 'github';
+type ButtonVariant = 'primary' | 'secondary' | 'gray' | 'tab' | 'github' | 'ghost' | 'danger';
+type ButtonSize = 'sm' | 'md';
 
 interface BaseButtonProps {
   children: ReactNode;
   disabled?: boolean;
   className?: string;
   variant?: ButtonVariant;
+  size?: ButtonSize;
   isActive?: boolean;
 }
 
@@ -60,10 +62,17 @@ const base =
   'focus-visible:outline-none focus-visible:opacity-90 ' +
   'disabled:pointer-events-none disabled:opacity-50';
 
+const sizeStyles: Record<ButtonSize, string> = {
+  sm: 'h-8 px-3 text-xs',
+  md: 'h-10 px-4 text-sm',
+};
+
 const primary = 'bg-primary text-white hover:bg-primary-hover';
 const secondary = 'bg-slate-200 text-slate-900 hover:bg-slate-300 transition-colors';
 const gray = 'bg-white text-gray-900 border border-gray-300 hover:bg-gray-50';
 const github = 'bg-gray-900 text-white hover:bg-gray-800 shadow-sm';
+const ghost = 'bg-transparent text-gray-500 hover:text-gray-800';
+const danger = 'bg-transparent text-red-500 hover:text-red-600';
 
 export const Button = ({
   children,
@@ -71,6 +80,7 @@ export const Button = ({
   className,
   variant = 'primary',
   isActive = false,
+  size = 'md',
   as = 'button',
   ...props
 }: ButtonProps) => {
@@ -84,9 +94,11 @@ export const Button = ({
     gray,
     tab: tabStyles,
     github,
+    ghost,
+    danger,
   };
 
-  const styles = `${base} ${variantStyles[variant]}`;
+  const styles = `${base} ${sizeStyles[size]} ${variantStyles[variant]}`;
 
   if (as === 'link') {
     const { href, onClick, ...rest } = props as ButtonAsLink;

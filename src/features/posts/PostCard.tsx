@@ -1,6 +1,7 @@
 import IconLike from '@/shared/assets/icons/icon_like.svg';
 import IconComments from '@/shared/assets/icons/icon_comments.svg';
 import Link from 'next/link';
+import { Tag } from '@/shared/ui/Tag';
 const tags = ['Gemini', 'n8n', 'React', 'Figma', '해커톤'];
 export default function PostCard() {
   return (
@@ -37,12 +38,7 @@ export default function PostCard() {
         </div>
         <ul className="flex items-center gap-2 flex-wrap">
           {tags.map((tag) => (
-            <li
-              key={tag}
-              className="text-xs md:text-sm px-2.5 py-1.5 text-primary bg-gray-100 rounded-full"
-            >
-              <span>{tag}</span>
-            </li>
+            <Tag key={tag} label={tag} />
           ))}
         </ul>
         <div className="flex items-center gap-3">
