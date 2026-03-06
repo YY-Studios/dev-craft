@@ -56,7 +56,7 @@ export const DocumentWrap = () => {
         <Accordion.Item value="item-1">
           <Accordion.Trigger>PR 변경 영향도</Accordion.Trigger>
           <Accordion.Content>
-            <div className="p-4">
+            <div>
               <ChartIframe chartHtml={chartHtml} />
             </div>
           </Accordion.Content>

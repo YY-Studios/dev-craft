@@ -5,12 +5,10 @@ import { useMe } from '@/features/auth/hooks/useMe';
 
 export interface GeminiResponse {
   html: string;
-  content: {
-    parts: Array<{ text: string }>;
-    role: string;
-  };
-  finishReason: string;
-  index: number;
+  title: string;
+  tags: string[];
+  pr_url: string;
+  content: string;
 }
 
 export const useCallN8nWebhook = () => {

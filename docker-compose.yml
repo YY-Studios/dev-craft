@@ -3,14 +3,32 @@ version: '3.8'
 services:
   n8n:
     image: n8nio/n8n:latest
+    container_name: n8n
     restart: always
+
     ports:
       - '5678:5678'
+
     environment:
       - N8N_HOST=n8n.devcraft.date
       - N8N_PORT=5678
       - N8N_PROTOCOL=https
       - NODE_ENV=production
-      - WEBHOOK_URL=https://n8n.devcraft.date # 고정 도메인으로 변경
+
+      # 에디터 접속 URL
+      - N8N_EDITOR_BASE_URL=https://n8n.devcraft.date
+
+      # 웹훅 URL
+      - WEBHOOK_URL=https://n8n.devcraft.date
+
+      # 타임존
+      - GENERIC_TIMEZONE=Asia/Seoul
+      - TZ=Asia/Seoul
+
+      # 기본 인증 (선택)
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=strongpassword
+
     volumes:
       - ./n8n_data:/home/node/.n8n
