@@ -35,7 +35,7 @@ export const PullRequestFetch = () => {
       { prUrl: selectedPrUrl, filters: selectedFilters },
       {
         onSuccess: (data: GeminiResponse) => {
-          const text = data?.content?.parts?.[0]?.text ?? '';
+          const text = data?.content ?? '';
           const chartHtml = data?.html;
           setDocument(text);
           setChartHtml(chartHtml);

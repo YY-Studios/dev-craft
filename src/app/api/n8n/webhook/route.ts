@@ -66,6 +66,7 @@ export async function POST(request: Request) {
   }
 
   const data = await n8nRes.json();
+  console.log('data', data);
 
   return NextResponse.json(data);
 }

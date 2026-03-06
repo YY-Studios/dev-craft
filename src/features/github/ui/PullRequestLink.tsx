@@ -24,7 +24,7 @@ export const PullRequestLink = () => {
       {
         onSuccess: (data: GeminiResponse) => {
           console.log(data);
-          const text = data?.content?.parts?.[0]?.text ?? '';
+          const text = data?.content ?? '';
           const chartHtml = data?.html;
           setDocument(text);
           setChartHtml(chartHtml);
