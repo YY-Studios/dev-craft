@@ -11,7 +11,18 @@ import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
 export const PullRequestLink = () => {
   const [inputValue, setInputValue] = useState<string>('');
   const { mutate } = useCallN8nWebhook();
-  const { setDocument, setChartHtml, setPending, setError, isPending } = usedocumentStore();
+  const {
+    setDocument,
+    setChartHtml,
+    setPending,
+    setError,
+    setTitle,
+    setPrUrl,
+    setRepoOwner,
+    setRepoName,
+    setTags,
+    isPending,
+  } = usedocumentStore();
   const { selectedFilters } = usePromptFilterStore();
 
   const HandleGenerateFormLink = () => {
@@ -20,14 +31,26 @@ export const PullRequestLink = () => {
     }
     setPending(true);
     mutate(
-      { prUrl: inputValue, filters: selectedFilters },
+      {
+        prUrl: inputValue,
+        filters: selectedFilters,
+      },
       {
         onSuccess: (data: GeminiResponse) => {
-          console.log(data);
-          const text = data?.content ?? '';
+          const text = (data?.content ?? '').replace(/\\n/g, '\n');
           const chartHtml = data?.html;
+          const title = data?.title;
+          const prUrl = data?.pr_url;
+          const tags = data?.tags;
+          const repoOwner = data?.repo_owner;
+          const repoName = data?.repo_name;
           setDocument(text);
+          setTitle(title);
+          setPrUrl(prUrl);
+          setTags(tags);
           setChartHtml(chartHtml);
+          setRepoOwner(repoOwner);
+          setRepoName(repoName);
         },
         onError: (e) => {
           setPending(false);

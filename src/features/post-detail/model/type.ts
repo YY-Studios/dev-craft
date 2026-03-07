@@ -1,4 +1,4 @@
-export interface Analysis {
+export interface postResponse {
   id: string;
   project_id: string;
   user_id: string;
@@ -17,12 +17,4 @@ export interface Analysis {
     username: string;
     avatar_url: string | null;
   };
-}
-
-export interface ProjectWithAnalyses {
-  id: string;
-  repo_name: string;
-  repo_owner: string;
-  user_id: string;
-  analyses: Analysis[];
 }

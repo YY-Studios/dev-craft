@@ -28,6 +28,8 @@ export const PullRequestFetch = () => {
     setError,
     setTitle,
     setPrUrl,
+    setRepoOwner,
+    setRepoName,
     setTags,
     isPending,
   } = usedocumentStore();
@@ -44,16 +46,20 @@ export const PullRequestFetch = () => {
       { prUrl: selectedPrUrl, filters: selectedFilters },
       {
         onSuccess: (data: GeminiResponse) => {
-          const text = data?.content ?? '';
+          const text = (data?.content ?? '').replace(/\\n/g, '\n');
           const chartHtml = data?.html;
           const title = data?.title;
           const prUrl = data?.pr_url;
           const tags = data?.tags;
+          const repoOwner = data?.repo_owner;
+          const repoName = data?.repo_name;
           setDocument(text);
           setTitle(title);
           setPrUrl(prUrl);
           setTags(tags);
           setChartHtml(chartHtml);
+          setRepoOwner(repoOwner);
+          setRepoName(repoName);
         },
         onError: () => {
           setPending(false);
