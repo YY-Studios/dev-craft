@@ -14,11 +14,12 @@ export async function GET() {
   try {
     const { user_id } = verifyAccessToken(accessToken);
     const data = await serverApi<ProjectWithAnalyses[]>(
-      `/projects?user_id=eq.${user_id}&select=id,repo_name,repo_owner,user_id,analyses(*)`,
+      `/projects?user_id=eq.${user_id}&select=id,repo_name,repo_owner,user_id,analyses(*,users(username,avatar_url))`,
     );
 
     return NextResponse.json(data);
   } catch (e) {
+    console.error(e);
     return NextResponse.json({ message: '데이터 조회에 실패했습니다.' }, { status: 500 });
   }
 }

@@ -9,6 +9,8 @@ export interface GeminiResponse {
   tags: string[];
   pr_url: string;
   content: string;
+  repo_owner: string;
+  repo_name: string;
 }
 
 export const useCallN8nWebhook = () => {
@@ -36,7 +38,7 @@ export const useCallN8nWebhook = () => {
 
       return await clientApi<GeminiResponse>('n8n/webhook', {
         method: 'POST',
-        body: { owner, repo, number, filters, githubUserId: user?.github_user_id },
+        body: { owner, repo, number, filters, githubUserId: user?.github_user_id, prUrl },
       });
     },
   });

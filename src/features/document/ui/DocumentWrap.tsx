@@ -3,18 +3,17 @@
 import { useState } from 'react';
 import Accordion from '@/shared/ui/accordion';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
-import { useRepoStore } from '@/shared/stores/useRepoStore';
 import { useSaveAnalyses } from '../hooks/useSaveAnalyses';
 import { LoadingAnimation } from '@/shared/ui/loding/LoadingAnimation';
 import { ChartIframe } from './ChartIframe';
 import NoData from '@/shared/ui/NoData';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Button from '@/shared/ui/Button';
+import { useMe } from '@/features/auth/hooks/useMe';
 
 export const DocumentWrap = () => {
-  const { document, chartHtml, title, prUrl, tags, isPending, isError } = usedocumentStore();
-  const { selectOrg, selectRepo } = useRepoStore();
+  const { document, chartHtml, title, prUrl, tags, isPending, isError, repoOwner, repoName } =
+    usedocumentStore();
   const [copiedPlain, setCopiedPlain] = useState(false);
   const [copiedMarkdown, setCopiedMarkdown] = useState(false);
   const { mutate } = useSaveAnalyses();
@@ -45,8 +44,8 @@ export const DocumentWrap = () => {
       prUrl,
       document: document ?? '',
       tags,
-      repo_owner: selectOrg?.login ?? '',
-      repo_name: selectRepo,
+      repo_owner: repoOwner,
+      repo_name: repoName,
     });
   };
 
