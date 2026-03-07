@@ -21,7 +21,16 @@ export const PullRequestFetch = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { mutate } = useCallN8nWebhook();
   const { selectedPrUrl } = usePrStore();
-  const { setDocument, setChartHtml, setPending, setError, isPending } = usedocumentStore();
+  const {
+    setDocument,
+    setChartHtml,
+    setPending,
+    setError,
+    setTitle,
+    setPrUrl,
+    setTags,
+    isPending,
+  } = usedocumentStore();
   const { selectedFilters } = usePromptFilterStore();
   const { data: me } = useMe();
 
@@ -37,7 +46,13 @@ export const PullRequestFetch = () => {
         onSuccess: (data: GeminiResponse) => {
           const text = data?.content ?? '';
           const chartHtml = data?.html;
+          const title = data?.title;
+          const prUrl = data?.pr_url;
+          const tags = data?.tags;
           setDocument(text);
+          setTitle(title);
+          setPrUrl(prUrl);
+          setTags(tags);
           setChartHtml(chartHtml);
         },
         onError: () => {

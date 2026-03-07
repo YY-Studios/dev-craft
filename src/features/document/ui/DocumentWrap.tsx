@@ -3,16 +3,21 @@
 import { useState } from 'react';
 import Accordion from '@/shared/ui/accordion';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
+import { useRepoStore } from '@/shared/stores/useRepoStore';
+import { useSaveAnalyses } from '../hooks/useSaveAnalyses';
 import { LoadingAnimation } from '@/shared/ui/loding/LoadingAnimation';
 import { ChartIframe } from './ChartIframe';
 import NoData from '@/shared/ui/NoData';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Button from '@/shared/ui/Button';
 
 export const DocumentWrap = () => {
-  const { document, chartHtml, isPending, isError } = usedocumentStore();
+  const { document, chartHtml, title, prUrl, tags, isPending, isError } = usedocumentStore();
+  const { selectOrg, selectRepo } = useRepoStore();
   const [copiedPlain, setCopiedPlain] = useState(false);
   const [copiedMarkdown, setCopiedMarkdown] = useState(false);
+  const { mutate } = useSaveAnalyses();
 
   // MD 복사
   const handleCopyMarkdown = () => {
@@ -31,6 +36,18 @@ export const DocumentWrap = () => {
     navigator.clipboard.writeText(plain);
     setCopiedPlain(true);
     setTimeout(() => setCopiedPlain(false), 2000);
+  };
+
+  // 문서 저장
+  const handleSaveDoc = () => {
+    mutate({
+      title,
+      prUrl,
+      document: document ?? '',
+      tags,
+      repo_owner: selectOrg?.login ?? '',
+      repo_name: selectRepo,
+    });
   };
 
   if (isPending) return <LoadingAnimation />;
@@ -65,7 +82,7 @@ export const DocumentWrap = () => {
       <Accordion accordion={false}>
         <Accordion.Item value="item-2">
           <Accordion.Trigger>
-            <div className="flex items-center justify-between w-full">
+            <div className="flex items-center justify-between w-full gap-3">
               <span>생성된 문서</span>
               <div className="flex gap-2 ml-auto">
                 <div
@@ -88,6 +105,16 @@ export const DocumentWrap = () => {
                 >
                   {copiedMarkdown ? '✅ 복사됨' : '🔗 MD 복사'}
                 </div>
+              </div>
+              <div
+                role="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSaveDoc();
+                }}
+                className="text-sm px-3 py-1 rounded-md border border-gray-300 hover:bg-gray-50 transition-all cursor-pointer"
+              >
+                문서 저장하기
               </div>
             </div>
           </Accordion.Trigger>
