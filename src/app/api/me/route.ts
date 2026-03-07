@@ -9,7 +9,7 @@ export async function GET() {
   const accessToken = cookieStore.get('access_token')?.value;
 
   if (!accessToken) {
-    return NextResponse.json(null, { status: 200 });
+    return NextResponse.json(null, { status: 401 });
   }
 
   try {
