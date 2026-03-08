@@ -7,8 +7,6 @@ interface PostAsideProps {
 }
 
 export default function PostAside({ posts, setSelectRepo }: PostAsideProps) {
-  // 나와야하는것: 전체보기, repo 이름들, repo갯수들
-
   const handelSelectRepo = (repo: string) => {
     setSelectRepo(repo);
   };
