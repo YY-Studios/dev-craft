@@ -14,7 +14,6 @@ import { GeminiResponse, useCallN8nWebhook } from '@/features/n8n/hooks/useCallN
 import { usePrStore } from '@/shared/stores/usePrStore';
 import { usedocumentStore } from '@/shared/stores/useDocumentStore';
 import { usePromptFilterStore } from '@/shared/stores/usePromptFilterStore';
-import { useMe } from '@/features/auth/hooks/useMe';
 
 export const PullRequestFetch = () => {
   const { open, close } = useModal();
@@ -34,7 +33,6 @@ export const PullRequestFetch = () => {
     isPending,
   } = usedocumentStore();
   const { selectedFilters } = usePromptFilterStore();
-  const { data: me } = useMe();
 
   const handleGenerateFromSelect = () => {
     if (!selectedPrUrl) {
@@ -70,10 +68,6 @@ export const PullRequestFetch = () => {
   };
 
   const handleSelectRepository = () => {
-    if (!me) {
-      modal.alert('로그인이 필요합니다.');
-      return;
-    }
     const id = open({
       component: (
         <Modal.Content>
