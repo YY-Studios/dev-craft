@@ -1,13 +1,12 @@
 'use client';
 
-import check from '@/shared/assets/icons/icon_check.svg';
-import Image from 'next/image';
 import { FeedCardProps } from './model/types';
+import Link from 'next/link';
 
 export function FeedCard({ post }: FeedCardProps) {
   return (
     <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
-      <div className="aspect-video overflow-hidden bg-gray-100 relative">
+      {/* <div className="aspect-video overflow-hidden bg-gray-100 relative">
         <img
           src={post.thumbnail_url}
           alt={post.title}
@@ -21,8 +20,8 @@ export function FeedCard({ post }: FeedCardProps) {
             OWNER
           </span>
         )}
-      </div>
-      <div className="p-4">
+      </div> */}
+      <Link href={`${post.users.username}/posts/${post.id}`} className="block p-4">
         <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-snug">
           {post.title}
         </h3>
@@ -41,7 +40,7 @@ export function FeedCard({ post }: FeedCardProps) {
             <span>{post.likes_count}</span>
           </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 }
