@@ -1,13 +1,10 @@
 'use client';
-import { MOCK_POSTS } from '@/app/feed/page';
 
 import check from '@/shared/assets/icons/icon_check.svg';
 import Image from 'next/image';
-import Link from 'next/link';
-import { useMe } from '../auth/hooks/useMe';
+import { FeedCardProps } from './model/types';
 
-export function FeedCard({ post }: { post: (typeof MOCK_POSTS)[0] }) {
-  const { data: user } = useMe();
+export function FeedCard({ post }: FeedCardProps) {
   return (
     <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
       <div className="aspect-video overflow-hidden bg-gray-100 relative">
@@ -31,12 +28,13 @@ export function FeedCard({ post }: { post: (typeof MOCK_POSTS)[0] }) {
         </h3>
         <p className="text-xs text-gray-500 line-clamp-2 mb-3 leading-relaxed">{post.content}</p>
         <p className="text-xs text-gray-400 mb-3">
-          {post.created_at} · {post.comments}개의 댓글
+          {/* {post.created_at} · {post.comments}개의 댓글 */}
+          {post.created_at.slice(0, 10)}
         </p>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
-            <img src={post.original_author.avatar_url} className="w-5 h-5 rounded-full" />
-            <span className="text-xs text-gray-500">by {post.original_author.login}</span>
+            <img src={post.users.avatar_url} className="w-5 h-5 rounded-full" />
+            <span className="text-xs text-gray-500">by {post.users.username}</span>
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-400">
             <span>♥</span>
@@ -44,7 +42,6 @@ export function FeedCard({ post }: { post: (typeof MOCK_POSTS)[0] }) {
           </div>
         </div>
       </div>
-      <Link href={`/${user?.username}/posts`}>나의 공방</Link>
     </div>
   );
 }

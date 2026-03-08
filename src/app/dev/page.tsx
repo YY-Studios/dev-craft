@@ -8,7 +8,7 @@ export const MOCK_POSTS = Array.from({ length: 10 }, (_, i) => ({
   title: 'Next.js App Router에서 Server Action으로 폼 처리하기',
   content: '기존 API Route 방식과 비교하며 Server Action의 장단점을 알아봅니다.',
   thumbnail_url: `https://picsum.photos/seed/${i + 10}/600/340`,
-  original_author: { login: '지니', avatar_url: `https://i.pravatar.cc/28?img=${i + 1}` },
+  users: { username: '지니', avatar_url: `https://i.pravatar.cc/28?img=${i + 1}` },
   likes_count: (i + 1) * 7,
   comments: (i % 5) + 1, // 나중에 별도 테이블예정
   created_at: `${(i % 6) + 1}일 전`,
