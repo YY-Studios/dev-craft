@@ -1,8 +1,7 @@
 'use client';
 
-import check from '@/shared/assets/icons/icon_check.svg';
-import Image from 'next/image';
 import { FeedCardProps } from './model/types';
+import Link from 'next/link';
 
 export function FeedCard({ post }: FeedCardProps) {
   return (
@@ -22,7 +21,7 @@ export function FeedCard({ post }: FeedCardProps) {
           </span>
         )}
       </div> */}
-      <div className="p-4">
+      <Link href={`${post.users.username}/posts/${post.id}`} className="block p-4">
         <h3 className="text-sm font-semibold text-gray-900 mb-1 line-clamp-2 leading-snug">
           {post.title}
         </h3>
@@ -41,7 +40,7 @@ export function FeedCard({ post }: FeedCardProps) {
             <span>{post.likes_count}</span>
           </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 }
