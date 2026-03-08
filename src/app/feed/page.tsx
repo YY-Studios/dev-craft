@@ -16,7 +16,9 @@ export default function FeedPage() {
           </Suspense>
         </div>
       </div>
-      <FeedList />
+      <Suspense fallback={null}>
+        <FeedList />
+      </Suspense>
     </>
   );
 }
