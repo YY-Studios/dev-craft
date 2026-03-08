@@ -22,7 +22,7 @@ export default function PostAside({ posts, setSelectRepo }: PostAsideProps) {
             onClick={() => handelSelectRepo('all')}
             className="flex-1 md:max-w-4/5 text-left hover:text-primary cursor-pointer whitespace-nowrap md:truncate"
           >
-            전체보기
+            {`전체보기()`}
           </button>
         </li>
         {posts.map((post) => (
