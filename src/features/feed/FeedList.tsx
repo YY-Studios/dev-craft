@@ -1,14 +1,10 @@
 'use client';
 
 import { FeedCard } from './FeedCard';
-import { useSearchParams } from 'next/navigation';
 import { useFeedPosts } from './hooks/useFeedPosts';
 
 export function FeedList() {
-  const searchParams = useSearchParams();
-  const query = searchParams.get('q') ?? '';
-
-  const { data: posts, isLoading } = useFeedPosts(query);
+  const { data: posts, isLoading } = useFeedPosts();
 
   if (isLoading) return <div>로딩중...</div>;
 
