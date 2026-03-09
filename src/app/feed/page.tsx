@@ -19,7 +19,7 @@ export default async function FeedPage() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="container--sm mx-auto flex flex-wrap items-baseline justify-between mb-2 md:mb-6 border-gray-200">
+      <div className="container--sm flex flex-wrap items-baseline justify-between mb-2 md:mb-6 border-gray-200">
         <div className="flex">
           <Suspense fallback={null}>
             <FeedTap />

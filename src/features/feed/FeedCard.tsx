@@ -3,10 +3,11 @@
 import { FeedCardProps } from './model/types';
 import Link from 'next/link';
 import { Tag } from '@/shared/ui/Tag';
+import IconLikeActive from '@/shared/assets/icons/icon_like_active.svg';
 
 export function FeedCard({ post }: FeedCardProps) {
   return (
-    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
+    <div className="bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
       {/* <div className="aspect-video overflow-hidden bg-gray-100 relative">
         <img
           src={post.thumbnail_url}
@@ -37,11 +38,11 @@ export function FeedCard({ post }: FeedCardProps) {
             <span className="text-xs text-gray-500">by {post.users.username}</span>
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-400">
-            <span>♥</span>
+            <img src={IconLikeActive.src} alt="" className="w-4 h-4" />
             <span>{post.likes_count}</span>
           </div>
         </div>
-        <ul className="flex gap-2 mt-5">
+        <ul className="flex gap-2 mt-5 flex-wrap">
           {post.tags.map((tag) => (
             <Tag key={tag} label={tag} size="sm" />
           ))}

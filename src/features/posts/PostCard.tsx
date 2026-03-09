@@ -15,7 +15,7 @@ interface PostCardProps {
 
 export default function PostCard({ analyses, post }: PostCardProps) {
   return (
-    <div className="w-full border border-gray-200 rounded-lg p-6">
+    <div className="w-full shadow-lg border border-gray-100 rounded-lg p-6">
       <div className="flex items-center gap-2">
         <img
           src={analyses.users.avatar_url ?? undefined}

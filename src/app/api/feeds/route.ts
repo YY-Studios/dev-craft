@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   const sort = searchParams.get('sort') ?? 'latest';
   const cursor = searchParams.get('cursor') ?? '';
   const offset = searchParams.get('offset') ?? '0';
-  const PAGE_SIZE = 2;
+  const PAGE_SIZE = 6;
   try {
     let filter = '';
     if (query) {

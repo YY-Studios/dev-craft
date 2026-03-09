@@ -19,7 +19,7 @@ export function useFeedPosts() {
       return clientApi<FeedPost[]>(`feeds?q=${query}&sort=${sort}${cursorParam}${offsetParam}`);
     },
     getNextPageParam: (lastPage, allPages) => {
-      if (lastPage.length < 2) return undefined;
+      if (lastPage.length < 6) return undefined;
 
       if (sort === 'latest') {
         return lastPage[lastPage.length - 1].created_at;
