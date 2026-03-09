@@ -37,6 +37,11 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       method: 'POST',
       body: { analysis_id: id, user_id },
     });
+    // likes_count +1
+    await serverApi(`/rpc/increment_likes`, {
+      method: 'POST',
+      body: { analysis_id: id },
+    });
     return NextResponse.json({ success: true });
   } catch (e) {
     return NextResponse.json({ message: '좋아요에 실패했습니다.' }, { status: 500 });
@@ -52,6 +57,11 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   try {
     await serverApi(`/likes?analysis_id=eq.${id}&user_id=eq.${user_id}`, {
       method: 'DELETE',
+    });
+    // likes_count -1
+    await serverApi(`/rpc/decrement_likes`, {
+      method: 'POST',
+      body: { analysis_id: id },
     });
     return NextResponse.json({ success: true });
   } catch (e) {
