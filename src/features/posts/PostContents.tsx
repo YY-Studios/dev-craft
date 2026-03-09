@@ -5,6 +5,7 @@ import { useRepoStats } from './hooks/useRepoStats'; // 새로 만든 통계 훅
 import PostAside from './PostAside';
 import PostList from './PostList';
 import { PostsSkeleton } from '@/shared/ui/loding/PostsSkeleton';
+import DashboardOverview from './DashboardOverview';
 
 export const PostContents = ({ username }: { username: string }) => {
   const [selectRepo, setSelectRepo] = useState<string>('all');
@@ -44,6 +45,7 @@ export const PostContents = ({ username }: { username: string }) => {
     <>
       <PostAside stats={stats ?? []} setSelectRepo={setSelectRepo} selectRepo={selectRepo} />
       <section className="flex-1 min-w-0">
+        <DashboardOverview />
         <PostList
           posts={allPosts}
           fetchNextPage={fetchNextPage}
