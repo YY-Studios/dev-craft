@@ -9,13 +9,33 @@ import { usePostDetail } from './hooks/usePostDetail';
 import Link from 'next/link';
 import PostDetailSkeleton from '@/shared/ui/loding/PostsDetailSkeleton';
 import NoData from '@/shared/ui/NoData';
+import { modal } from '@/shared/ui/modal/modalApi';
+import { useRouter } from 'next/navigation';
+import { useDeletePost } from './hooks/useDeletePost';
+import { useMe } from '../auth/hooks/useMe';
 
 interface PostDetailProps {
   id: string;
 }
 export default function PostDetail({ id }: PostDetailProps) {
-  console.log('id', id);
+  const router = useRouter();
   const { data, isPending, isError } = usePostDetail({ id });
+  const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
+  const { data: me } = useMe();
+  const isOwner = me?.username === data?.users.username;
+
+  const handleDelete = async () => {
+    const confirmed = await modal.confirm('정말 삭제하시겠습니까?', {
+      title: '포스트 삭제',
+      confirmText: '삭제',
+      cancelText: '취소',
+    });
+    if (!confirmed) return;
+
+    deletePost(id, {
+      onSuccess: () => router.push(`/${data?.users.username}/posts`),
+    });
+  };
 
   if (isPending) {
     return <PostDetailSkeleton />;
@@ -55,6 +75,11 @@ export default function PostDetail({ id }: PostDetailProps) {
           <img src={IconLike.src} alt="좋아요" className="w-4 h-4 md:w-5 md:h-5" />
           {data.likes_count}
         </div>
+        {isOwner && (
+          <Button variant="gray" size="sm" onClick={handleDelete} disabled={isDeleting}>
+            {isDeleting ? '삭제 중...' : '삭제'}
+          </Button>
+        )}
       </div>
 
       {/* 본문 */}
@@ -83,10 +108,9 @@ export default function PostDetail({ id }: PostDetailProps) {
       </div>
 
       {/* 댓글 */}
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <h2 className="text-sm font-semibold text-gray-700 mb-4">댓글 3개</h2>
 
-        {/* 댓글 입력 */}
         <div className="flex gap-3 mb-10">
           <img src="https://i.pravatar.cc/28?img=2" className="w-7 h-7 rounded-full mt-1" />
 
@@ -103,7 +127,6 @@ export default function PostDetail({ id }: PostDetailProps) {
           </div>
         </div>
 
-        {/* 댓글 목록 */}
         <div className="flex flex-col divide-y divide-zinc-100">
           {[1, 2, 3].map((i) => (
             <div key={i} className="flex gap-3 py-5">
@@ -136,7 +159,7 @@ export default function PostDetail({ id }: PostDetailProps) {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
