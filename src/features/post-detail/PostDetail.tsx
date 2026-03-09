@@ -3,6 +3,7 @@
 import Button from '@/shared/ui/Button';
 import { Tag } from '@/shared/ui/Tag';
 import IconLike from '@/shared/assets/icons/icon_like.svg';
+import IconLikeActive from '@/shared/assets/icons/icon_like_active.svg';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { usePostDetail } from './hooks/usePostDetail';
@@ -13,6 +14,8 @@ import { modal } from '@/shared/ui/modal/modalApi';
 import { useRouter } from 'next/navigation';
 import { useDeletePost } from './hooks/useDeletePost';
 import { useMe } from '../auth/hooks/useMe';
+import { useLike } from './hooks/useLike';
+import { cn } from '@/shared/lib/cn';
 
 interface PostDetailProps {
   id: string;
@@ -23,6 +26,7 @@ export default function PostDetail({ id }: PostDetailProps) {
   const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
   const { data: me } = useMe();
   const isOwner = me?.username === data?.users.username;
+  const { count, isLiked, toggleLike } = useLike(id);
 
   const handleDelete = async () => {
     const confirmed = await modal.confirm('정말 삭제하시겠습니까?', {
@@ -71,10 +75,17 @@ export default function PostDetail({ id }: PostDetailProps) {
           </Link>
           <span className="text-xs text-gray-400">{data.created_at.slice(0, 10)}</span>
         </div>
-        <div className="ml-auto flex items-center gap-0.5 text-xs md:text-sm">
-          <img src={IconLike.src} alt="좋아요" className="w-4 h-4 md:w-5 md:h-5" />
-          {data.likes_count}
-        </div>
+        <button
+          onClick={() => toggleLike()}
+          className="ml-auto flex items-center gap-0.5 text-xs md:text-sm"
+        >
+          <img
+            src={isLiked ? IconLikeActive.src : IconLike.src}
+            alt="좋아요"
+            className="w-4 h-4 md:w-5 md:h-5"
+          />
+          {count}
+        </button>
         {isOwner && (
           <Button variant="gray" size="sm" onClick={handleDelete} disabled={isDeleting}>
             {isDeleting ? '삭제 중...' : '삭제'}
