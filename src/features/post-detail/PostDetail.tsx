@@ -46,11 +46,15 @@ export default function PostDetail({ id }: PostDetailProps) {
   }
 
   if (isError || !data) {
-    return <NoData message="데이터를 불러올 수 없습니다" description="잠시 후 다시 시도해주세요" />;
+    return (
+      <div className="container--sm">
+        <NoData message="데이터를 불러올 수 없습니다" description="잠시 후 다시 시도해주세요" />
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="container--sm">
       {/* 태그 */}
       <div className="mb-2">
         <ul className="flex items-center gap-2 flex-wrap">
