@@ -7,15 +7,23 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { usePostDetail } from './hooks/usePostDetail';
 import Link from 'next/link';
+import PostDetailSkeleton from '@/shared/ui/loding/PostsDetailSkeleton';
+import NoData from '@/shared/ui/NoData';
 
 interface PostDetailProps {
   id: string;
 }
 export default function PostDetail({ id }: PostDetailProps) {
   console.log('id', id);
-  const { data, isLoading, isError } = usePostDetail({ id });
-  console.log(data);
-  if (!data) return null;
+  const { data, isPending, isError } = usePostDetail({ id });
+
+  if (isPending) {
+    return <PostDetailSkeleton />;
+  }
+
+  if (isError || !data) {
+    return <NoData message="데이터를 불러올 수 없습니다" description="잠시 후 다시 시도해주세요" />;
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
