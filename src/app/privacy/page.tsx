@@ -94,7 +94,7 @@ export default function PrivacyPage() {
             탈퇴를 진행할 수 있습니다. 개인정보 보호와 관련된 문의는 아래 이메일로 연락해 주시기
             바랍니다.
           </p>
-          <p className="mt-2 font-medium text-gray-700">📧 문의: [본인의 이메일 주소 입력란]</p>
+          <p className="mt-2 font-medium text-gray-700">📧 문의: s0912135@gmail.com</p>
         </section>
       </div>
     </main>
