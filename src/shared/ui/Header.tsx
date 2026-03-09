@@ -2,27 +2,72 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useMe } from '@/features/auth/hooks/useMe';
 import logo from '@/shared/assets/icons/icon_logo.svg';
 import { Button } from './Button';
+import { cn } from '../lib/cn';
 
 export const Header = () => {
+  const pathname = usePathname();
   const { data: user } = useMe();
+
   const handleLogout = async () => {
     await fetch('/api/logout', { method: 'POST' });
     localStorage.clear();
     window.location.href = '/';
   };
-  return (
-    <header className="sticky top-0 z-50 bg-[#f6f8fa] px-6 py-4">
-      <div className="mx-auto flex max-w-[1200px] items-center justify-between">
-        <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center">
-            <Image src={logo} alt="logo" />
-          </div>
-          <h1 className="font-logo text-xl font-bold">개발자 공방</h1>
-        </Link>
 
+  return (
+    <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-6">
+        {/* left */}
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center">
+              <Image src={logo} alt="logo" className="h-auto w-full" />
+            </div>
+            <h1 className="font-logo text-lg font-bold text-zinc-900">개발자 공방</h1>
+          </Link>
+
+          <nav className="flex items-center gap-6">
+            <Link
+              href="/create"
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-zinc-900',
+                pathname === '/create' ? 'font-bold text-zinc-900' : 'text-zinc-500', // [수정] active 스타일
+              )}
+            >
+              문서 생성
+            </Link>
+            <Link
+              href="/feed"
+              className={cn(
+                'text-sm font-medium transition-colors hover:text-zinc-900',
+                pathname === '/feed' ? 'font-bold text-zinc-900' : 'text-zinc-500',
+              )}
+            >
+              모두의 공방
+            </Link>
+            {user ? (
+              <Link
+                href={`/${user.username}/posts`}
+                className={cn(
+                  'text-sm font-medium transition-colors hover:text-zinc-900',
+                  pathname === `/${user.username}/posts`
+                    ? 'font-bold text-zinc-900'
+                    : 'text-zinc-500',
+                )}
+              >
+                나의 공방
+              </Link>
+            ) : (
+              ''
+            )}
+          </nav>
+        </div>
+
+        {/* right */}
         <div className="flex items-center gap-4">
           {user && (
             <div className="flex items-center gap-3">
@@ -30,16 +75,16 @@ export const Header = () => {
                 <img
                   src={user.avatar_url}
                   alt={user.username}
-                  className="h-8 w-8 rounded-full ring-2 ring-gray-200"
+                  className="h-8 w-8 rounded-full border border-zinc-200 object-cover"
                 />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 ring-2 ring-gray-300">
-                  <span className="text-sm font-medium text-gray-600">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-100 border border-zinc-200">
+                  <span className="text-sm font-medium text-zinc-600">
                     {user.username?.[0]?.toUpperCase()}
                   </span>
                 </div>
               )}
-              <span className="text-sm font-medium text-gray-700">{user.username}</span>
+              <span className="text-sm font-medium text-zinc-700">{user.username}</span>
             </div>
           )}
 
