@@ -9,7 +9,12 @@ export async function GET(req: Request) {
   const offset = searchParams.get('offset') ?? '0';
   const PAGE_SIZE = 2;
   try {
-    const filter = query ? `&title=ilike.*${query}*` : '';
+    let filter = '';
+    if (query) {
+      const safeQuery = encodeURIComponent(query);
+
+      filter = `&or=(title.ilike.*${safeQuery}*,tags_text.ilike.*${safeQuery}*)`;
+    }
 
     const base = `id,title,content,thumbnail_url,likes_count,created_at,tags,is_author_verified,users(username,avatar_url)`;
 
