@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export default function NotFound() {
   return (
-    <div className="mt-20 px-4 text-center">
+    <div className="container--sm text-center">
       {/* 로고 + 404 나란히 */}
       <div className="mb-8 flex items-center justify-center gap-3">
         <div className="relative h-28 w-28 flex-shrink-0 opacity-40">
