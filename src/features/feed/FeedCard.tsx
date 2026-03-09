@@ -2,6 +2,7 @@
 
 import { FeedCardProps } from './model/types';
 import Link from 'next/link';
+import { Tag } from '@/shared/ui/Tag';
 
 export function FeedCard({ post }: FeedCardProps) {
   return (
@@ -40,6 +41,11 @@ export function FeedCard({ post }: FeedCardProps) {
             <span>{post.likes_count}</span>
           </div>
         </div>
+        <ul className="flex gap-2 mt-5">
+          {post.tags.map((tag) => (
+            <Tag key={tag} label={tag} size="sm" />
+          ))}
+        </ul>
       </Link>
     </div>
   );

@@ -4,17 +4,33 @@ import { useInView } from 'react-intersection-observer';
 import { FeedCard } from './FeedCard';
 import { useFeedPosts } from './hooks/useFeedPosts';
 import { useEffect } from 'react';
+import NoData from '@/shared/ui/NoData';
+import { FeedSkeleton } from '@/shared/ui/loding/FeedSkeleton';
 
 export function FeedList() {
   const { ref, inView } = useInView();
   const { data: posts, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFeedPosts();
   const post = posts?.pages.flat() ?? [];
-  console.log(post);
+  console.log('feed', post);
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage]);
+
+  if (isLoading) {
+    return <FeedSkeleton count={4} />;
+  }
+
+  if (post.length === 0) {
+    return (
+      <NoData
+        message="검색 결과가 없습니다."
+        description="다른 검색어나 태그로 다시 검색해 보세요."
+        className="w-full mt-10"
+      />
+    );
+  }
 
   return (
     <>
