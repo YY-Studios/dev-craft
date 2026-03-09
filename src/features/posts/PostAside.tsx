@@ -16,7 +16,7 @@ export default function PostAside({ stats, setSelectRepo, selectRepo }: PostAsid
 
   return (
     <aside className="min-w-full md:min-w-50">
-      <h2 className="hidden md:block text-base text-gray-700 font-semibold border-b border-gray-400 pb-3 mb-3">
+      <h2 className="hidden md:block text-base text-gray-700 font-semibold border-b border-gray-300 pb-3 mb-3">
         레포지토리 목록
       </h2>
       <ul className="flex md:flex-col gap-1.5 overflow-auto pb-2 md:pb-0">
