@@ -57,3 +57,7 @@ button {
 .container {
   @apply max-w-7xl px-6 py-10;
 }
+
+.container--sm {
+  @apply max-w-3xl mx-auto py-8;
+}
