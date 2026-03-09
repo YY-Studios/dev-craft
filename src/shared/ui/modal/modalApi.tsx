@@ -44,25 +44,28 @@ export const modal = {
       const id = open({
         component: (
           <Modal.Content>
-            <Modal.Header>{options?.title || '확인'}</Modal.Header>
+            <Modal.Header className="text-center">{options?.title || '확인'}</Modal.Header>
             <Modal.Body>{message}</Modal.Body>
-            <Modal.Footer>
-              <button
-                onClick={() => {
-                  close(id);
-                  resolve(false);
-                }}
-              >
-                {options?.cancelText || '취소'}
-              </button>
-              <button
+            <Modal.Footer className="flex gap-2">
+              <Button
+                className="flex-1"
                 onClick={() => {
                   close(id);
                   resolve(true);
                 }}
               >
                 {options?.confirmText || '확인'}
-              </button>
+              </Button>
+              <Button
+                className="flex-1"
+                variant="gray"
+                onClick={() => {
+                  close(id);
+                  resolve(false);
+                }}
+              >
+                {options?.cancelText || '취소'}
+              </Button>
             </Modal.Footer>
           </Modal.Content>
         ),
