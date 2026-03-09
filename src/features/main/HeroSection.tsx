@@ -2,11 +2,12 @@
 import { easeInOut, motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
-import HeroImage1 from '../../../public/hero_1.png';
-import HeroImage2 from '../../../public/hero_2.png';
+import HeroImage1 from '@/shared/assets/images/hero_1.png';
+import HeroImage2 from '@/shared/assets/images/hero_2.png';
+
 export default function HeroSection() {
   return (
-    <section className="py-15 pb-30 md:py-32 lg:py-40 px-6">
+    <section className="py-15 pb- md:py-32 lg:py-40 px-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-7xl mx-auto md:gap-16 lg:gap-5 items-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
