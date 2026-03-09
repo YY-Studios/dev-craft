@@ -10,6 +10,7 @@ import NoData from '@/shared/ui/NoData';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useMe } from '@/features/auth/hooks/useMe';
+import { modal } from '@/shared/ui/modal/modalApi';
 
 export const DocumentWrap = () => {
   const { document, chartHtml, title, prUrl, tags, isPending, isError, repoOwner, repoName } =
@@ -17,6 +18,7 @@ export const DocumentWrap = () => {
   const [copiedPlain, setCopiedPlain] = useState(false);
   const [copiedMarkdown, setCopiedMarkdown] = useState(false);
   const { mutate } = useSaveAnalyses();
+  const { data: me } = useMe();
 
   // MD 복사
   const handleCopyMarkdown = () => {
@@ -39,6 +41,11 @@ export const DocumentWrap = () => {
 
   // 문서 저장
   const handleSaveDoc = () => {
+    if (!me) {
+      modal.alert('로그인이 필요합니다.');
+      return;
+    }
+
     mutate({
       title,
       prUrl,

@@ -26,6 +26,7 @@ export const modal = {
                   close(id);
                   resolve();
                 }}
+                className="w-full"
               >
                 {options?.confirmText || '확인'}
               </Button>
