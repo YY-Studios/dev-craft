@@ -13,7 +13,7 @@ export const PullRequestWrap = () => {
   const [isMounted] = useState(false);
   const [mode, setMode] = useState<'link' | 'select'>('link');
   const { data: me } = useMe();
-
+  console.log('me', me);
   useEffect(() => {
     if (isMounted && hasRepoSelectd) {
       setMode('select');
@@ -25,6 +25,11 @@ export const PullRequestWrap = () => {
       modal.alert('로그인이 필요합니다.');
       return;
     }
+    if (me.id === '11111111-1111-1111-1111-111111111111') {
+      modal.alert('게스트는 PR을 불러 올 수 없습니다. 깃허브 로그인을 해주세요.');
+      return;
+    }
+
     setMode(mode);
   };
 

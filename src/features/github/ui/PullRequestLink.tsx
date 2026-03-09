@@ -25,14 +25,16 @@ export const PullRequestLink = () => {
   } = usedocumentStore();
   const { selectedFilters } = usePromptFilterStore();
 
-  const HandleGenerateFormLink = () => {
-    if (!inputValue) {
+  const HandleGenerateFormLink = (targetUrl?: string) => {
+    const urlToUse = targetUrl || inputValue;
+    if (!urlToUse) {
       modal.alert('pr 주소를 입력해주세요.');
+      return;
     }
     setPending(true);
     mutate(
       {
-        prUrl: inputValue,
+        prUrl: urlToUse,
         filters: selectedFilters,
       },
       {
@@ -61,9 +63,20 @@ export const PullRequestLink = () => {
     );
   };
 
+  // 체험 로직
+  const handleTry = () => {
+    const sampleUrl = 'https://github.com/YY-Studios/dev-craft/pull/242';
+    setInputValue(sampleUrl);
+    HandleGenerateFormLink(sampleUrl);
+  };
   return (
     <section className="space-y-4">
-      <h2 className="text-xl font-bold border-l-5 border-primary pl-2">PR 링크 입력</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold border-l-5 border-primary pl-2">PR 링크 입력</h2>
+        <Button variant="secondary" onClick={handleTry}>
+          샘플 PR 주소로 체험해보기
+        </Button>
+      </div>
       <Input
         type="text"
         placeholder="GitHub PR 링크를 붙여넣으세요"
