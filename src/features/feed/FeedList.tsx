@@ -41,7 +41,7 @@ export function FeedList() {
         ))}
       </div>
       <div ref={ref} />
-      {isFetchingNextPage && <div>불러오는 중...</div>}
+      {isFetchingNextPage && <FeedSkeleton />}
     </>
   );
 }
