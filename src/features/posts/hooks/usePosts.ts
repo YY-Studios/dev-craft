@@ -1,20 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
-import { ProjectWithAnalyses } from '@/features/posts/model/posts';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { clientApi } from '@/shared/api/client/clientApi';
 
-export const usePosts = ({ username }: { username: string }) => {
-  return useQuery<ProjectWithAnalyses[] | null>({
-    queryKey: ['posts', username],
+export const usePosts = ({ username, selectRepo }: { username: string; selectRepo: string }) => {
+  return useInfiniteQuery({
+    queryKey: ['posts', username, selectRepo],
 
-    queryFn: async (): Promise<ProjectWithAnalyses[] | null> => {
-      try {
-        return await clientApi<ProjectWithAnalyses[]>(`posts?username=${username}`);
-      } catch (e) {
-        console.error('포스트 로딩 실패:', e);
-        return null;
-      }
+    queryFn: async ({ pageParam }) => {
+      const cursorParam = pageParam ? `&cursor=${encodeURIComponent(pageParam as string)}` : '';
+      return await clientApi(`posts?username=${username}&repo=${selectRepo}${cursorParam}`);
     },
-    staleTime: 1000 * 60 * 5, // 5분간 캐시
+    initialPageParam: '',
+    getNextPageParam: (lastPage: any[]) => {
+      if (!lastPage || lastPage.length < 10) return undefined;
+      return lastPage[lastPage.length - 1].created_at;
+    },
     enabled: !!username,
   });
 };

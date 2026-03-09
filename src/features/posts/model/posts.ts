@@ -26,3 +26,16 @@ export interface ProjectWithAnalyses {
   user_id: string;
   analyses: Analysis[];
 }
+
+export interface RepoStat {
+  count: number;
+  repo_name: string;
+}
+
+export interface AnalysisWithProject extends Analysis {
+  projects: {
+    id: string;
+    repo_name: string;
+    repo_owner: string;
+  };
+}
