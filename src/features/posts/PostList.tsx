@@ -18,7 +18,6 @@ export default function PostList({
   isFetchingNextPage,
 }: PostListProps) {
   const { ref, inView } = useInView();
-  console.log(posts);
 
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {

@@ -11,7 +11,6 @@ export function FeedList() {
   const { ref, inView } = useInView();
   const { data: posts, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFeedPosts();
   const post = posts?.pages.flat() ?? [];
-  console.log('feed', post);
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
