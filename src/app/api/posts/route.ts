@@ -2,9 +2,12 @@ import { ProjectWithAnalyses } from '@/features/posts/model/posts';
 import { serverApi } from '@/shared/api/server/serverApi';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
   const username = searchParams.get('username');
+  const cursor = searchParams.get('cursor') ?? '';
+  const repo = searchParams.get('repo') ?? 'all';
+  const PAGE_SIZE = 10;
 
   if (!username) {
     return NextResponse.json(
@@ -13,9 +16,17 @@ export async function GET(request: Request) {
     );
   }
   try {
-    const data = await serverApi<ProjectWithAnalyses[]>(
-      `/projects?select=id,repo_name,repo_owner,user_id,analyses!inner(*,users!inner(username,avatar_url))&analyses.users.username=eq.${username}`,
-    );
+    let path = `/analyses?select=*,projects!inner(id,repo_name,repo_owner),users!inner(username,avatar_url)&users.username=eq.${username}&order=created_at.desc&limit=${PAGE_SIZE}`;
+
+    if (cursor) {
+      path += `&created_at=lt.${encodeURIComponent(cursor)}`;
+    }
+
+    if (repo !== 'all') {
+      path += `&projects.repo_name=eq.${repo}`;
+    }
+
+    const data = await serverApi(path);
 
     return NextResponse.json(data);
   } catch (e) {

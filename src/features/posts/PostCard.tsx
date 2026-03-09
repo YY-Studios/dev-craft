@@ -5,15 +5,17 @@ import { Tag } from '@/shared/ui/Tag';
 import { Analysis, ProjectWithAnalyses } from './model/posts';
 
 interface PostCardProps {
-  post: ProjectWithAnalyses;
+  post: {
+    id: string;
+    repo_name: string;
+    repo_owner: string;
+  };
   analyses: Analysis;
 }
 
 export default function PostCard({ analyses, post }: PostCardProps) {
-  console.log('analyses', analyses);
-  console.log('post', post);
   return (
-    <div className="flex-1 border border-gray-200 rounded-lg p-6">
+    <div className="w-full border border-gray-200 rounded-lg p-6">
       <div className="flex items-center gap-2">
         <img
           src={analyses.users.avatar_url ?? undefined}
@@ -32,7 +34,7 @@ export default function PostCard({ analyses, post }: PostCardProps) {
           <img
             src="/card_dummy.png"
             alt=""
-            className="absolute left-0  w-ful h-full object-cover"
+            className="absolute left-0  w-full h-full object-cover"
           />
         </Link>
         <Link
