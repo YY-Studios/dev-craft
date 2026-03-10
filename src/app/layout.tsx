@@ -5,6 +5,7 @@ import './globals.css';
 import { QueryProvider } from '@/shared/providers/QueryProvider';
 import { ModalProvider } from '@/shared/ui/modal/ModalProvider';
 import { Footer } from '@/shared/ui/Footer';
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: '개발자 공방 | PR 기반 문서 자동화 도구',
@@ -46,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className="antialiased">
+        <Analytics />
         <QueryProvider>
           <ModalProvider>
             <Header />

@@ -1,15 +1,13 @@
 import HeroSection from '@/features/main/HeroSection';
-import FeatureSection from '@/features/main/FeatureSection';
 import FeedSection from '@/features/main/FeedSection';
 import { Suspense } from 'react';
+import ScrollLanding from '@/features/main/ScrollLanding';
 
 export default function Main() {
   return (
     <>
       <HeroSection />
-
-      <FeatureSection />
-
+      <ScrollLanding />
       <Suspense>
         <FeedSection />
       </Suspense>
