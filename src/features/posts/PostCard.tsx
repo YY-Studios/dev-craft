@@ -1,5 +1,4 @@
-import IconLike from '@/shared/assets/icons/icon_like.svg';
-import IconComments from '@/shared/assets/icons/icon_comments.svg';
+import IconLikeActive from '@/shared/assets/icons/icon_like_active.svg';
 import Link from 'next/link';
 import { Tag } from '@/shared/ui/Tag';
 import { Analysis, ProjectWithAnalyses } from './model/posts';
@@ -53,13 +52,13 @@ export default function PostCard({ analyses, post }: PostCardProps) {
         </ul>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-0.5 text-xs md:text-sm">
-            <img src={IconLike.src} alt="좋아요" className="w-4 h-4 md:w-6 md:h-6" />
+            <img src={IconLikeActive.src} alt="좋아요" className="w-4 h-4 md:w-6 md:h-6" />
             {analyses.likes_count}
           </div>
-          <div className="flex items-center gap-0.5 text-xs md:text-sm">
+          {/* <div className="flex items-center gap-0.5 text-xs md:text-sm">
             <img src={IconComments.src} alt="댓글" className="w-4 h-4 md:w-6 md:h-6" />
             {analyses.views_count}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
