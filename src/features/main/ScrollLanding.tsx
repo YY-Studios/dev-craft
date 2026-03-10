@@ -10,18 +10,21 @@ const sections = [
     id: 0,
     title: 'PR URL 하나로, 문서가 완성됩니다',
     sub: '문서 종류, 말투, 독자 타겟까지 — 필터 하나로 원하는 스타일의 글이 나옵니다',
+    checks: ['GitHub PR 링크 입력만으로 문서 생성', '블로그, README 등 문서 종류 선택'],
     images: ['/section_create_document1.png', '/section_create_document2.png'],
   },
   {
     id: 1,
     title: '내 코드가 어디까지 영향을 주는지, 한눈에',
     sub: '변경 파일 수, 영향 파일 수, 주의 항목까지 자동 분석',
+    checks: ['파일 간 의존성 그래프 시각화', '주의가 필요한 변경 자동 감지'],
     images: ['/section_pr_impact.png'],
   },
   {
     id: 2,
     title: '나만의 개발 기록이 쌓이는 공방',
     sub: '생성한 문서는 피드에 공유하고, 다른 개발자의 글도 구경하세요',
+    checks: ['기술 스택·활동 현황 대시보드', '커뮤니티 피드에서 인사이트 공유'],
     images: ['/section_my_workshop.png'],
   },
 ];
@@ -31,6 +34,7 @@ const totalSlots = sections.reduce((acc, s) => acc + s.images.length, 0);
 type Slot = {
   title: string;
   sub: string;
+  checks: string[];
   image: string;
   start: number;
   end: number;
@@ -49,6 +53,7 @@ function buildSlots(): Slot[] {
       slots.push({
         title: section.title,
         sub: section.sub,
+        checks: section.checks,
         image: section.images[i],
         start: (slotIndex + i) / totalSlots,
         end: (slotIndex + i + 1) / totalSlots,
@@ -73,7 +78,6 @@ export default function ScrollLanding() {
   const [activeSection, setActiveSection] = useState(0);
 
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    // 현재 스크롤 위치에 해당하는 슬롯 계산
     const slotIdx = Math.min(Math.floor(v * totalSlots), totalSlots - 1);
     if (slotIdx !== activeSlot) setActiveSlot(slotIdx);
 
@@ -83,7 +87,7 @@ export default function ScrollLanding() {
 
   return (
     <div ref={containerRef} className="relative" style={{ height: `${totalSlots * 100}vh` }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center">
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-5 w-full max-w-4xl px-6">
           {/* 이미지 영역 */}
           <div className="relative w-full h-[35vh] sm:h-[40vh] md:h-[45vh] lg:h-[50vh]">
@@ -110,19 +114,30 @@ export default function ScrollLanding() {
           </div>
 
           {/* 텍스트 영역 */}
-          <div className="relative w-full h-20">
+          <div className="relative w-full h-36 md:h-40">
             {sections.map((section, i) => (
               <div
                 key={i}
                 className="absolute inset-0 flex flex-col items-center justify-center text-center transition-opacity duration-500 ease-in-out"
                 style={{ opacity: i === activeSection ? 1 : 0 }}
               >
-                <h2 className="mt-20 text-3xl md:text-4xl leading-[1.2] font-bold text-gray-900">
+                <h2 className="text-2xl md:text-4xl leading-[1.2] font-bold text-gray-900">
                   {section.title}
                 </h2>
-                <p className="md:mt-5 text-base md:text-lg text-gray-700 break-keep">
+                <p className="mt-2 md:mt-4 text-sm md:text-lg text-gray-700 leading-relaxed break-keep">
                   {section.sub}
                 </p>
+                <div className="flex gap-4 mt-3 md:mt-4">
+                  {section.checks.map((check, j) => (
+                    <span
+                      key={j}
+                      className="flex items-center gap-1.5 text-xs md:text-sm text-gray-600"
+                    >
+                      <span className="text-blue-600">✓</span>
+                      {check}
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -142,8 +157,8 @@ function Indicator({ activeSection }: { activeSection: number }) {
           key={i}
           className="w-1.5 h-1.5 rounded-full transition-all duration-300"
           style={{
-            backgroundColor: 'white',
-            opacity: i === activeSection ? 1 : 0.3,
+            backgroundColor: i === activeSection ? '#2563eb' : '#cbd5e1',
+            opacity: i === activeSection ? 1 : 0.5,
             transform: i === activeSection ? 'scale(1.5)' : 'scale(1)',
           }}
         />
